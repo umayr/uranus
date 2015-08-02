@@ -22,7 +22,7 @@
     "grunt-jscs": "^1.8.0",
     "grunt-timer": "^0.6.0",
     "jshint-stylish": "^2.0.1",
-    "nodemon": "^1.3.7"
+    "mocha": "^2.2.5"
   },
   "keywords": [
     "validate",
@@ -32,5 +32,8 @@
     "api",
     "assert",
     "library"
-  ]
+  ],
+  "dependencies": {
+    "validator": "^4.0.0"
+  }
 }
