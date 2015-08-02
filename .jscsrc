@@ -21,10 +21,6 @@
   "disallowTrailingComma": true,
   "disallowTrailingWhitespace": true,
   "disallowYodaConditions": true,
-  "requireKeywordsOnNewLine": [
-    "else",
-    "if"
-  ],
   "requireParenthesesAroundIIFE": true,
   "requireCurlyBraces": [
     "if",
