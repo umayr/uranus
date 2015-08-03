@@ -4,7 +4,7 @@
   "description": "Validates up to ur-anus.",
   "main": "bin/www",
   "scripts": {
-    "test": "./scripts/test.sh"
+    "test": "grunt verify && mocha tests/index.js"
   },
   "repository": {
     "type": "git",
