@@ -22,7 +22,7 @@ module.exports = function (grunt) {
       },
       files: [
         'Gruntfile.js',
-        'src/**/*.js'
+        'index.js'
       ]
     },
     jscs: {
@@ -38,7 +38,7 @@ module.exports = function (grunt) {
       files: {
         src: [
           'Gruntfile.js',
-          'src/**/*.js'
+          'index.js'
         ]
       }
     }
