@@ -50,7 +50,7 @@ var extensions = {
     return this.notRegex(str, pattern, modifiers);
   },
   contains: function (str, elem) {
-    return str.indexOf(elem) >= 0 && !!elem;
+    return str.indexOf(elem) >= 0 && Boolean(elem);
   },
   notContains: function (str, elem) {
     return !this.contains(str, elem);
@@ -69,10 +69,20 @@ var extensions = {
   }
 };
 
+/**
+ * Creates new instance of Validator.
+ * @constructor
+ */
 function Validator() {
   this.validator = _validator;
   this.registerExtensions(extensions);
 }
+
+/**
+ * Registers extra validators to validator instance.
+ *
+ * @param extensions
+ */
 Validator.prototype.registerExtensions = function registerExtensions(extensions) {
   for (var extension in extensions) {
     if (extensions.hasOwnProperty(extension)) {
@@ -80,6 +90,13 @@ Validator.prototype.registerExtensions = function registerExtensions(extensions)
     }
   }
 };
+
+/**
+ * Method to perform validation.
+ *
+ * @param source
+ * @returns {{isValid: boolean, rules: {}}}
+ */
 Validator.prototype.validateAll = function validateAll(source) {
   var response = {isValid: true, rules: {}};
   for (var i = 0; i < source.length; i++) {
@@ -119,6 +136,15 @@ Validator.prototype.validateAll = function validateAll(source) {
 
   return response;
 };
+
+/**
+ * Inner method that perform single validation.
+ *
+ * @param value
+ * @param test
+ * @param rule
+ * @returns {*}
+ */
 Validator.prototype.validate = function validate(value, test, rule) {
   if (typeof this.validator[rule] !== 'function') {
     throw new Error('Invalid validator function: ' + rule);
