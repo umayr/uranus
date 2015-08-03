@@ -1,4 +1,4 @@
-### Uranus
+### Uranus [![Build Status](https://travis-ci.org/umayr/uranus.svg)](https://travis-ci.org/umayr/uranus)
 
 Uranus is a wrapper validation utility over chriso's awesome validator.js with some extra extension methods.
 
