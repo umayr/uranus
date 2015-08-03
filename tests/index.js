@@ -12,20 +12,18 @@ function test(options) {
   if (options.valid) {
     options.valid.forEach(function (valid) {
       var validator = new Validator();
-      validator.validateAll([make(valid, options.validator, options.args, options.msg)]);
+      var response = validator.validateAll([make(valid, options.validator, options.args, options.msg)]);
+      if (!response.isValid) {
+        throw new Error('It failed the test when it should fucking not.');
+      }
     });
   }
   if (options.invalid) {
     options.invalid.forEach(function (invalid) {
       var validator = new Validator();
-      try {
-        validator.validateAll([make(invalid, options.validator, options.args, options.msg)]);
-      }
-      catch (error) {
-        var msg = options.msg || 'Validation `' + options.validator + '` failed.';
-        if (error !== msg) {
-          throw new Error('It passed the test, when it should fucking not.');
-        }
+      var response = validator.validateAll([make(invalid, options.validator, options.args, options.msg)]);
+      if (response.isValid) {
+        throw new Error('It failed the test when it should fucking not.');
       }
     });
   }
@@ -80,10 +78,72 @@ describe('validator', function () {
     test({
       validator: 'isUrl',
       valid: [
-        'foobar.com', 'www.foobar.com', 'foobar.com/', 'valid.au', 'http://www.foobar.com/', 'http://www.foobar.com:23/', 'http://www.foobar.com:65535/', 'http://www.foobar.com:5/', 'https://www.foobar.com/', 'ftp://www.foobar.com/', 'http://www.foobar.com/~foobar', 'http://user:pass@www.foobar.com/', 'http://user:@www.foobar.com/', 'http://127.0.0.1/', 'http://10.0.0.0/', 'http://189.123.14.13/', 'http://duckduckgo.com/?q=%2F', 'http://foobar.com/t$-_.+!*\'(),', 'http://localhost:3000/', 'http://foobar.com/?foo=bar#baz=qux', 'http://foobar.com?foo=bar', 'http://foobar.com#baz=qux', 'http://www.xn--froschgrn-x9a.net/', 'http://xn--froschgrn-x9a.com/', 'http://foo--bar.com', 'http://høyfjellet.no', 'http://xn--j1aac5a4g.xn--j1amh', 'http://кулік.укр'
+        'foobar.com',
+        'www.foobar.com',
+        'foobar.com/',
+        'valid.au',
+        'http://www.foobar.com/',
+        'http://www.foobar.com:23/',
+        'http://www.foobar.com:65535/',
+        'http://www.foobar.com:5/',
+        'https://www.foobar.com/',
+        'ftp://www.foobar.com/',
+        'http://www.foobar.com/~foobar',
+        'http://user:pass@www.foobar.com/',
+        'http://user:@www.foobar.com/',
+        'http://127.0.0.1/',
+        'http://10.0.0.0/',
+        'http://189.123.14.13/',
+        'http://duckduckgo.com/?q=%2F',
+        'http://foobar.com/t$-_.+!*\'(),',
+        'http://localhost:3000/',
+        'http://foobar.com/?foo=bar#baz=qux',
+        'http://foobar.com?foo=bar',
+        'http://foobar.com#baz=qux',
+        'http://www.xn--froschgrn-x9a.net/',
+        'http://xn--froschgrn-x9a.com/',
+        'http://foo--bar.com',
+        'http://høyfjellet.no',
+        'http://xn--j1aac5a4g.xn--j1amh',
+        'http://кулік.укр'
       ],
       invalid: [
-        'xyz://foobar.com', 'invalid/', 'invalid.x', 'invalid.', '.com', 'http://com/', 'http://300.0.0.1/', 'mailto:foo@bar.com', 'rtmp://foobar.com', 'http://www.xn--.com/', 'http://xn--.com/', 'http://www.foobar.com:0/', 'http://www.foobar.com:70000/', 'http://www.foobar.com:99999/', 'http://www.-foobar.com/', 'http://www.foobar-.com/', 'http://www.foo---bar.com/', 'http://foobar/# lol', 'http://foobar/? lol', 'http://foobar/ lol/', 'http://lol @foobar.com/', 'http://lol:lol @foobar.com/', 'http://lol:lol:lol@foobar.com/', 'http://lol: @foobar.com/', 'http://www.foo_bar.com/', 'http://www.foobar.com/\t', 'http://\n@www.foobar.com/', '', 'http://foobar.com/' + new Array(2083).join('f'), 'http://*.foo.com', '*.foo.com', '!.foo.com', 'http://example.com.', 'http://localhost:61500this is an invalid url!!!!', '////foobar.com', 'http:////foobar.com'
+        'xyz://foobar.com',
+        'invalid/',
+        'invalid.x',
+        'invalid.',
+        '.com',
+        'http://com/',
+        'http://300.0.0.1/',
+        'mailto:foo@bar.com',
+        'rtmp://foobar.com',
+        'http://www.xn--.com/',
+        'http://xn--.com/',
+        'http://www.foobar.com:0/',
+        'http://www.foobar.com:70000/',
+        'http://www.foobar.com:99999/',
+        'http://www.-foobar.com/',
+        'http://www.foobar-.com/',
+        'http://www.foo---bar.com/',
+        'http://foobar/# lol',
+        'http://foobar/? lol',
+        'http://foobar/ lol/',
+        'http://lol @foobar.com/',
+        'http://lol:lol @foobar.com/',
+        'http://lol:lol:lol@foobar.com/',
+        'http://lol: @foobar.com/',
+        'http://www.foo_bar.com/',
+        'http://www.foobar.com/\t',
+        'http://\n@www.foobar.com/',
+        '',
+        'http://foobar.com/' + new Array(2083).join('f'),
+        'http://*.foo.com',
+        '*.foo.com',
+        '!.foo.com',
+        'http://example.com.',
+        'http://localhost:61500this is an invalid url!!!!',
+        '////foobar.com',
+        'http:////foobar.com'
       ]
     });
   });
@@ -91,28 +151,70 @@ describe('validator', function () {
     test({
       validator: 'isIP',
       valid: [
-        '127.0.0.1', '0.0.0.0', '255.255.255.255', '1.2.3.4', '::1', '2001:db8:0000:1:1:1:1:1', '2001:41d0:2:a141::1', '::ffff:127.0.0.1', '::0000', '0000::', '1::', '1111:1:1:1:1:1:1:1', 'fe80::a6db:30ff:fe98:e946', '::', '::ffff:127.0.0.1', '0:0:0:0:0:ffff:127.0.0.1'
+        '127.0.0.1',
+        '0.0.0.0',
+        '255.255.255.255',
+        '1.2.3.4',
+        '::1',
+        '2001:db8:0000:1:1:1:1:1',
+        '2001:41d0:2:a141::1',
+        '::ffff:127.0.0.1',
+        '::0000',
+        '0000::',
+        '1::',
+        '1111:1:1:1:1:1:1:1',
+        'fe80::a6db:30ff:fe98:e946',
+        '::',
+        '::ffff:127.0.0.1',
+        '0:0:0:0:0:ffff:127.0.0.1'
       ],
       invalid: [
-        'abc', '256.0.0.0', '0.0.0.256', '26.0.0.256', '::banana', 'banana::', '::1banana', '::1::', '1:', ':1', ':1:1:1::2', '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1', '::11111', '11111:1:1:1:1:1:1:1', '2001:db8:0000:1:1:1:1::1', '0:0:0:0:0:0:ffff:127.0.0.1', '0:0:0:0:ffff:127.0.0.1'
+        'abc',
+        '256.0.0.0',
+        '0.0.0.256',
+        '26.0.0.256',
+        '::banana',
+        'banana::',
+        '::1banana',
+        '::1::',
+        '1:',
+        ':1',
+        ':1:1:1::2',
+        '1:1:1:1:1:1:1:1:1:1:1:1:1:1:1:1',
+        '::11111',
+        '11111:1:1:1:1:1:1:1',
+        '2001:db8:0000:1:1:1:1::1',
+        '0:0:0:0:0:0:ffff:127.0.0.1',
+        '0:0:0:0:ffff:127.0.0.1'
       ]
     });
     test({
       validator: 'isIPv4',
       valid: [
-        '127.0.0.1', '0.0.0.0', '255.255.255.255', '1.2.3.4'
+        '127.0.0.1',
+        '0.0.0.0',
+        '255.255.255.255',
+        '1.2.3.4'
       ],
       invalid: [
-        '::1', '2001:db8:0000:1:1:1:1:1', '::ffff:127.0.0.1'
+        '::1',
+        '2001:db8:0000:1:1:1:1:1',
+        '::ffff:127.0.0.1'
       ]
     });
     test({
       validator: 'isIPv6',
       valid: [
-        '::1', '2001:db8:0000:1:1:1:1:1', '::ffff:127.0.0.1'
+        '::1',
+        '2001:db8:0000:1:1:1:1:1',
+        '::ffff:127.0.0.1'
       ],
       invalid: [
-        '127.0.0.1', '0.0.0.0', '255.255.255.255', '1.2.3.4', '::ffff:287.0.0.1'
+        '127.0.0.1',
+        '0.0.0.0',
+        '255.255.255.255',
+        '1.2.3.4',
+        '::ffff:287.0.0.1'
       ]
     });
   });
@@ -156,7 +258,7 @@ describe('validator', function () {
         '123', '00123', '-00123', '0', '-0', '0.01', '.1', '1.0', '-0', '0.0000000000001'
       ],
       invalid: [
-        '....', ' ', '.', '0.1a', 'a', '\n'
+        '....', ' ', '0.1a', 'a', '\n'
       ]
     });
   });
@@ -207,7 +309,16 @@ describe('validator', function () {
     test({
       validator: 'isFloat',
       valid: [
-        '123', '123.', '123.123', '-123.123', '-0.123', '+0.123', '0.123', '.0', '01.123', '-0.22250738585072011e-307'
+        '123',
+        '123.',
+        '123.123',
+        '-123.123',
+        '-0.123',
+        '+0.123',
+        '0.123',
+        '.0',
+        '01.123',
+        '-0.22250738585072011e-307'
       ],
       invalid: [
         '-.123', '  ', '', 'foo'
@@ -318,17 +429,60 @@ describe('validator', function () {
       invalid: ['', 'a', 'abcd']
     });
   });
-  xit('should validate UUIDs', function () {
+  it('should validate UUIDs', function () {
     test({
-      validator: 'isUUID',
+      validator: 'isUUIDv4',
       valid: [
-        'A987FBC9-4BED-3078-CF07-9141BA07C9F3', 'A987FBC9-4BED-4078-8F07-9141BA07C9F3', 'A987FBC9-4BED-5078-AF07-9141BA07C9F3'
+        '4a68b601-35bd-4a4a-91a5-f4e634e34943',
+        '4fb968a7-cbdd-4755-8b90-b41b60100483',
+        '5a65df6a-ae33-4b86-8a4b-37cdc1b84828'
       ],
       invalid: [
-        '', 'xxxA987FBC9-4BED-3078-CF07-9141BA07C9F3', 'A987FBC9-4BED-3078-CF07-9141BA07C9F3xxx', 'A987FBC94BED3078CF079141BA07C9F3', '934859', '987FBC9-4BED-3078-CF07A-9141BA07C9F3', 'AAAAAAAA-1111-1111-AAAG-111111111111'
+        '',
+        'xxxA987FBC9-4BED-3078-CF07-9141BA07C9F3',
+        'A987FBC9-4BED-3078-CF07-9141BA07C9F3xxx',
+        'A987FBC94BED3078CF079141BA07C9F3',
+        '934859',
+        '987FBC9-4BED-3078-CF07A-9141BA07C9F3',
+        'AAAAAAAA-1111-1111-AAAG-111111111111'
       ]
     });
-
+    test({
+      validator: 'isUUIDv3',
+      valid: [
+        'c478211b-224d-30b1-9116-c06048999ce2'
+      ],
+      invalid: [
+        '',
+        '4a68b601-35bd-4a4a-91a5-f4e634e34943',
+        '4fb968a7-cbdd-4755-8b90-b41b60100483',
+        '5a65df6a-ae33-4b86-8a4b-37cdc1b84828',
+        'xxxA987FBC9-4BED-3078-CF07-9141BA07C9F3',
+        'A987FBC9-4BED-3078-CF07-9141BA07C9F3xxx',
+        'A987FBC94BED3078CF079141BA07C9F3',
+        '934859',
+        '987FBC9-4BED-3078-CF07A-9141BA07C9F3',
+        'AAAAAAAA-1111-1111-AAAG-111111111111'
+      ]
+    });
+    test({
+      validator: 'isUUIDv5',
+      valid: [
+        '74738ff5-5367-5958-9aee-98fffdcd1876'
+      ],
+      invalid: [
+        '',
+        '4a68b601-35bd-4a4a-91a5-f4e634e34943',
+        '4fb968a7-cbdd-4755-8b90-b41b60100483',
+        '5a65df6a-ae33-4b86-8a4b-37cdc1b84828',
+        'xxxA987FBC9-4BED-3078-CF07-9141BA07C9F3',
+        'A987FBC9-4BED-3078-CF07-9141BA07C9F3xxx',
+        'A987FBC94BED3078CF079141BA07C9F3',
+        '934859',
+        '987FBC9-4BED-3078-CF07A-9141BA07C9F3',
+        'AAAAAAAA-1111-1111-AAAG-111111111111'
+      ]
+    });
   });
   it('should validate a string that is in another string or array', function () {
     test({
@@ -355,7 +509,10 @@ describe('validator', function () {
     });
     test({
       validator: 'isIn',
-      invalid: ['foo', '']
+      invalid: [
+        'foo',
+        ''
+      ]
     });
   });
   it('should validate a string that is in another object', function () {
@@ -366,8 +523,16 @@ describe('validator', function () {
         'bar': 2,
         'foobar': 3
       }],
-      valid: ['foo', 'bar', 'foobar'],
-      invalid: ['foobarbaz', 'barfoo', '']
+      valid: [
+        'foo',
+        'bar',
+        'foobar'
+      ],
+      invalid: [
+        'foobarbaz',
+        'barfoo',
+        ''
+      ]
     });
     test({
       validator: 'isIn',
@@ -384,10 +549,17 @@ describe('validator', function () {
     test({
       validator: 'isDate',
       valid: [
-        '2011-08-04', '04. 08. 2011.', '08/04/2011', '2011.08.04', '4. 8. 2011. GMT', '2011-08-04 12:00'
+        '2011-08-04',
+        '04. 08. 2011.',
+        '08/04/2011',
+        '2011.08.04',
+        '4. 8. 2011. GMT',
+        '2011-08-04 12:00'
       ],
       invalid: [
-        'foo', '2011-foo-04', 'GMT'
+        'foo',
+        '2011-foo-04',
+        'GMT'
       ]
     });
   });
@@ -395,31 +567,60 @@ describe('validator', function () {
     test({
       validator: 'isAfter',
       args: '2011-08-03',
-      valid: ['2011-08-04', new Date(2011, 8, 10)],
-      invalid: ['2010-07-02', '2011-08-03', new Date(0), 'foo']
+      valid: [
+        '2011-08-04',
+        new Date(2011, 8, 10)
+      ],
+      invalid: [
+        '2010-07-02',
+        '2011-08-03',
+        new Date(0),
+        'foo'
+      ]
     });
   });
   it('should validate dates against an end date', function () {
     test({
       validator: 'isBefore',
       args: ['08/04/2011'],
-      valid: ['2010-07-02', '2010-08-04', new Date(0)],
-      invalid: ['08/04/2011', new Date(2011, 9, 10)]
+      valid: [
+        '2010-07-02',
+        '2010-08-04',
+        new Date(0)],
+      invalid: [
+        '08/04/2011',
+        new Date(2011, 9, 10)
+      ]
     });
     test({
       validator: 'isBefore',
       args: [new Date(2011, 7, 4)],
-      valid: ['2010-07-02', '2010-08-04', new Date(0)],
-      invalid: ['08/04/2011', new Date(2011, 9, 10)]
+      valid: [
+        '2010-07-02',
+        '2010-08-04',
+        new Date(0)
+      ],
+      invalid: [
+        '08/04/2011',
+        new Date(2011, 9, 10)
+      ]
     });
   });
   it('should validate that integer strings are divisible by a number', function () {
     test({
       validator: 'isDivisibleBy',
       args: [2],
-      valid: ['2', '4', '100', '1000'],
+      valid: [
+        '2',
+        '4',
+        '100',
+        '1000'],
       invalid: [
-        '1', '2.5', '101', 'foo', ''
+        '1',
+        '2.5',
+        '101',
+        'foo',
+        ''
       ]
     });
   });
@@ -427,10 +628,17 @@ describe('validator', function () {
     test({
       validator: 'isCreditCard',
       valid: [
-        '375556917985515', '36050234196908', '4716461583322103', '4716-2210-5188-5662', '4929 7226 5379 7141', '5398228707871527'
+        '375556917985515',
+        '36050234196908',
+        '4716461583322103',
+        '4716-2210-5188-5662',
+        '4929 7226 5379 7141',
+        '5398228707871527'
       ],
       invalid: [
-        'foo', 'foo', '5398228707871528'
+        'foo',
+        'foo',
+        '5398228707871528'
       ]
     });
   });
@@ -447,6 +655,56 @@ describe('validator', function () {
           key: 'value'
         }, '{ \'key\': \'value\' }', 'null', '1234', 'false', '"nope"'
       ]
+    });
+  });
+  it('should validate not empty strings', function () {
+    test({
+      validator: 'notEmpty',
+      valid: [
+        'boom', '..', '  .   '
+      ],
+      invalid: [
+        ''
+      ]
+    });
+  });
+  it('should validate a string that is not in other string/array', function () {
+    test({
+      validator: 'notIn',
+      args: ['foobar'],
+      valid: ['foobarbaz', 'barfoo'],
+      invalid: ['foo', 'bar', 'foobar', '']
+    });
+    test({
+      validator: 'notIn',
+      args: [
+        ['foo', 'bar']
+      ],
+      valid: ['foobar', 'barfoo', ''],
+      invalid: ['foo', 'bar']
+    });
+    test({
+      validator: 'notIn',
+      args: [
+        [1, 2, 3]
+      ],
+      valid: ['4', ''],
+      invalid: ['1', '2', '3']
+    });
+    test({
+      validator: 'notIn',
+      valid: [
+        'foo',
+        ''
+      ]
+    });
+  });
+  it('should validate strings not contain another string', function () {
+    test({
+      validator: 'notContains',
+      args: ['foo'],
+      valid: ['bar', 'fobar'],
+      invalid: ['foo', 'foobar', 'bazfoo']
     });
   });
 });
