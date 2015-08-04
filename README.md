@@ -28,7 +28,8 @@ To execute tests:
 After installing uranus, you can simply use it as:
 
 ``` javascript
- var validator = new require('uranus')();
+ var Uranus = require('uranus');
+ var validator = new Uranus();
  var result = validator.validateAll([
  {
     value: '@foo.com',
