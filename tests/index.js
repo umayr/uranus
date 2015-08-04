@@ -358,6 +358,17 @@ describe('validator', function () {
       ]
     });
   });
+  it('should validate not null strings', function () {
+    test({
+      validator: 'notNull',
+      valid: [
+        ' ', 'foo'
+      ],
+      invalid: [
+        '', NaN, [], undefined, null
+      ]
+    });
+  });
   it('should validate strings against an expected value', function () {
     test({
       validator: 'equals',
