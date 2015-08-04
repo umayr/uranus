@@ -5,24 +5,23 @@
 
 'use strict';
 
-//var assert = require('assert');
-var Validator = require('../index.js');
+var Uranus = require('../lib/index.js');
 
 function test(options) {
   if (options.valid) {
     options.valid.forEach(function (valid) {
-      var validator = new Validator();
+      var validator = new Uranus();
       var response = validator.validateAll([make(valid, options.validator, options.args, options.msg)]);
-      if (!response.isValid) {
+      if (!response.isValid()) {
         throw new Error('It failed the test when it should fucking not.');
       }
     });
   }
   if (options.invalid) {
     options.invalid.forEach(function (invalid) {
-      var validator = new Validator();
+      var validator = new Uranus();
       var response = validator.validateAll([make(invalid, options.validator, options.args, options.msg)]);
-      if (response.isValid) {
+      if (response.isValid()) {
         throw new Error('It failed the test when it should fucking not.');
       }
     });
