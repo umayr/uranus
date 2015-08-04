@@ -1,8 +1,8 @@
 {
   "name": "uranus",
-  "version": "0.0.2",
-  "description": "Validates up to ur-anus.",
-  "main": "bin/www",
+  "version": "0.1.0",
+  "description": "Yet another validation library for node that validates up to ur-anus.",
+  "main": "./lib/index.js",
   "scripts": {
     "test": "grunt verify && mocha tests/index.js"
   },
