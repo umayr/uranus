@@ -1,6 +1,6 @@
 {
   "name": "uranus",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Yet another validation library for node that validates up to ur-anus.",
   "main": "./lib/index.js",
   "scripts": {
