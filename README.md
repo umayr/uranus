@@ -146,7 +146,7 @@ As mentioned above, Uranus acts like a wrapper to `validator.js` so it supports 
 Checkout [`Validator.js`](https://github.com/chriso/validator.js) project for more details on supported validations.
 Note: If a rule is supported by `validator.js` but it doesn't work properly in Uranus, please feel free to report an issue.
 
-#### Lisence:
+#### License:
 
 ```
 The MIT License (MIT)
