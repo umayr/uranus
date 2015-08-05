@@ -252,7 +252,7 @@ describe('validator', function () {
     test({
       validator: 'isNumeric',
       valid: [
-        '123', '00123', '-00123', '0', '-0', '+123', null
+        '123', '00123', '-00123', '0', '-0', '+123'
       ],
       invalid: [
         '123.123', ' ', '.'
