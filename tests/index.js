@@ -6,6 +6,7 @@
 'use strict';
 
 var Uranus = require('../lib/index.js');
+var format = require('util').format;
 
 function test(options) {
   if (options.valid) {
@@ -13,7 +14,11 @@ function test(options) {
       var validator = new Uranus();
       var response = validator.validateAll([make(valid, options.validator, options.args, options.msg)]);
       if (!response.isValid()) {
-        throw new Error('It failed the test when it should fucking not.');
+        throw new Error(
+          format('It failed the test when it should fucking not. [Rule: %s, Value: %s]',
+            options.validator,
+            valid)
+        );
       }
     });
   }
@@ -22,7 +27,11 @@ function test(options) {
       var validator = new Uranus();
       var response = validator.validateAll([make(invalid, options.validator, options.args, options.msg)]);
       if (response.isValid()) {
-        throw new Error('It failed the test when it should fucking not.');
+        throw new Error(
+          format('It passed the test when it should fucking not. [Rule: %s, Value: %s]',
+            options.validator,
+            invalid)
+        );
       }
     });
   }
@@ -239,11 +248,11 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate numeric strings', function () {
+  it.only('should validate numeric strings', function () {
     test({
       validator: 'isNumeric',
       valid: [
-        '123', '00123', '-00123', '0', '-0', '+123'
+        '123', '00123', '-00123', '0', '-0', '+123', null
       ],
       invalid: [
         '123.123', ' ', '.'
@@ -715,6 +724,38 @@ describe('validator', function () {
       args: ['foo'],
       valid: ['bar', 'fobar'],
       invalid: ['foo', 'foobar', 'bazfoo']
+    });
+  });
+  it('should validate minimum numbers', function () {
+    test({
+      validator: 'min',
+      args: 10,
+      valid: [11, 100, 2000, 40000, 10.0000001],
+      invalid: [1, 2.3, 9.99999]
+    });
+  });
+  it('should validate maximum numbers', function () {
+    test({
+      validator: 'max',
+      args: 10,
+      valid: [9.999, 10, 4, 0, 2.4],
+      invalid: [101, 50, 10.0000001]
+    });
+  });
+  it('should validate if a regex matches', function () {
+    test({
+      validator: 'is',
+      args: /^[A-Z]{4}$/,
+      valid: ['FOOO', 'BAAM', 'YOLO'],
+      invalid: [101, 50, 10.0000001, 'FOOOOOO', 'MEH', undefined, '', null]
+    });
+  });
+  it('should validate if a regex doesn\'t match', function () {
+    test({
+      validator: 'not',
+      args: /^[a-z]{4}$/,
+      valid: [101, 50, 10.0000001, 'FOOOOOO', 'MEH', 'MEHA', ' fooo', 'yolo\t', 'yada!'],
+      invalid: ['fooo', 'baam', 'yolo']
     });
   });
 });
