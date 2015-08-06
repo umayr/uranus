@@ -161,7 +161,7 @@ As mentioned above, Uranus acts like a wrapper to `validator.js` so it supports 
   notEmpty: true,             // don't allow empty strings
   equals: 'specific value',   // only allow a specific value
   contains: 'foo',            // force specific substrings
-  optional: ['foo', 'isUrl']  // validate the rule provided in second parameter if first param is not null
+  optional: ['isUrl']         // validate the rule provided in second parameter if first param is not null
   notIn: [['foo', 'bar']],    // check the value is not one of these
   isIn: [['foo', 'bar']],     // check the value is one of these
   notContains: 'bar',         // don't allow specific substrings
