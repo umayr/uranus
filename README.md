@@ -84,17 +84,48 @@ var result = validator.validateAll([
  }]);
 ```
 
-Later you can get these messages by `getMessage()` method. For example, to get error message for `isEmail` for the first value:
+By default it validates all the rules for all value sets but if you set `progressive` to `true` while creating validator instance, it will stop iterating through rules when one fails. In that way you can get only one error message for one value instead of getting all, for example:
 
 ``` javascript
-  var msg = result.getMessage('@foo.com', 'isEmail');
+var validator = new Uranus({ progressive: true });
+var result = validator.validateAll([
+ {
+    value: '@foo.com',
+    rules: {
+      isEmail: {
+        args: true,
+        msg: 'Boo! email is invalid'
+      },
+      len: {
+        args: [15, 100],
+        msg: 'You\'re either too large or too small.'
+      }
+    }
+ }]);
+ 
+ console.log(result.getAllMessages())
+ // ["Boo! email is invalid"]
+```
+
+Later you can get all of these messages by `getAllMessages()` method. For example,
+
+``` javascript
+  var msgs = result.getAllMessages();
+  console.log(msgs)
+  // ["Boo! email is invalid", "You're either too large or too small.", "meh, only letters, k?", "only lowercase, babes.", "No fishin'"]
+```
+
+You can also get message for one specific rule by:
+
+``` javascript
+  var msg = result.getMessage(0, 'isEmail'); // where 0 is the index of provided array.
   console.log(msg) // Boo! email is invalid
 ```
 
 In order to get all rules for one value you can use `getItem()` method, like: 
 
 ``` javascript
-  var check = result.getItem('@foo.com');
+  var check = result.getItem(0);
   
   console.log(check.isEmail.isValid()) // false
   console.log(check.isEmail.getMessage()) // Boo! email is invalid
@@ -109,39 +140,40 @@ Note: You can get whole `ValidationItem` by using `getRule()`.
 As mentioned above, Uranus acts like a wrapper to `validator.js` so it supports all validations currently provided by `validator.js`. In addition to that, there are several extra validations that Uranus provides. Some common validations along with their args are as follows:
 
 ```
-  is: ["^[a-z]+$",'i'],     // will only allow letters
-  is: /^[a-z]+$/i,          // same as the previous example using real RegExp
-  not: ["[a-z]",'i'],       // will not allow letters
-  isEmail: true,            // checks for email format (foo@bar.com)
-  isUrl: true,              // checks for url format (http://foo.com)
-  isIP: true,               // checks for IPv4 (129.89.23.1) or IPv6 format
-  isIPv4: true,             // checks for IPv4 (129.89.23.1)
-  isIPv6: true,             // checks for IPv6 format
-  isAlpha: true,            // will only allow letters
-  isAlphanumeric: true      // will only allow alphanumeric characters, so "_abc" will fail
-  isNumeric: true           // will only allow numbers
-  isInt: true,              // checks for valid integers
-  isFloat: true,            // checks for valid floating point numbers
-  isDecimal: true,          // checks for any numbers
-  isLowercase: true,        // checks for lowercase
-  isUppercase: true,        // checks for uppercase
-  notNull: true,            // won't allow null
-  isNull: true,             // only allows null
-  notEmpty: true,           // don't allow empty strings
-  equals: 'specific value', // only allow a specific value
-  contains: 'foo',          // force specific substrings
-  notIn: [['foo', 'bar']],  // check the value is not one of these
-  isIn: [['foo', 'bar']],   // check the value is one of these
-  notContains: 'bar',       // don't allow specific substrings
-  len: [2,10],              // only allow values with length between 2 and 10
-  isUUID: 4,                // only allow uuids
-  isDate: true,             // only allow date strings
-  isAfter: "2011-11-05",    // only allow date strings after a specific date
-  isBefore: "2011-11-05",   // only allow date strings before a specific date
-  max: 23,                  // only allow values
-  min: 23,                  // only allow values >= 23
-  isArray: true,            // only allow arrays
-  isCreditCard: true        // check for valid credit card numbers
+  is: ["^[a-z]+$",'i'],       // will only allow letters
+  is: /^[a-z]+$/i,            // same as the previous example using real RegExp
+  not: ["[a-z]",'i'],         // will not allow letters
+  isEmail: true,              // checks for email format (foo@bar.com)
+  isUrl: true,                // checks for url format (http://foo.com)
+  isIP: true,                 // checks for IPv4 (129.89.23.1) or IPv6 format
+  isIPv4: true,               // checks for IPv4 (129.89.23.1)
+  isIPv6: true,               // checks for IPv6 format
+  isAlpha: true,              // will only allow letters
+  isAlphanumeric: true        // will only allow alphanumeric characters, so "_abc" will fail
+  isNumeric: true             // will only allow numbers
+  isInt: true,                // checks for valid integers
+  isFloat: true,              // checks for valid floating point numbers
+  isDecimal: true,            // checks for any numbers
+  isLowercase: true,          // checks for lowercase
+  isUppercase: true,          // checks for uppercase
+  notNull: true,              // won't allow null
+  isNull: true,               // only allows null
+  notEmpty: true,             // don't allow empty strings
+  equals: 'specific value',   // only allow a specific value
+  contains: 'foo',            // force specific substrings
+  optional: ['foo', 'isUrl']  // validate the rule provided in second parameter if first param is not null
+  notIn: [['foo', 'bar']],    // check the value is not one of these
+  isIn: [['foo', 'bar']],     // check the value is one of these
+  notContains: 'bar',         // don't allow specific substrings
+  len: [2,10],                // only allow values with length between 2 and 10
+  isUUID: 4,                  // only allow uuids
+  isDate: true,               // only allow date strings
+  isAfter: "2011-11-05",      // only allow date strings after a specific date
+  isBefore: "2011-11-05",     // only allow date strings before a specific date
+  max: 23,                    // only allow values
+  min: 23,                    // only allow values >= 23
+  isArray: true,              // only allow arrays
+  isCreditCard: true          // check for valid credit card numbers
 ```
 
 Checkout [`Validator.js`](https://github.com/chriso/validator.js) project for more details on supported validations.
