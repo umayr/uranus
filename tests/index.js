@@ -8,6 +8,8 @@
 var Uranus = require('../lib/index.js');
 var format = require('util').format;
 
+var assert = require('assert');
+
 function test(options) {
   if (options.valid) {
     options.valid.forEach(function (valid) {
@@ -248,7 +250,7 @@ describe('validator', function () {
       ]
     });
   });
-  it.only('should validate numeric strings', function () {
+  it('should validate numeric strings', function () {
     test({
       validator: 'isNumeric',
       valid: [
@@ -758,4 +760,75 @@ describe('validator', function () {
       invalid: ['fooo', 'baam', 'yolo']
     });
   });
+  it('should validate if an object is either null and iff its not then perform second operation', function () {
+    test({
+      validator: 'optional',
+      args: ['isEmail'],
+      valid: [null, 'foo@bar.com', '', undefined],
+      invalid: ['fooo', 'baam', 'yolo']
+    });
+
+    test({
+      validator: 'optional',
+      args: ['isNumeric'],
+      valid: [null, 10, '', undefined],
+      invalid: ['fooo', 'baam', 'yolo']
+    });
+
+    test({
+      validator: 'optional',
+      args: ['isUrl'],
+      valid: [null, 'https://www.foo.com', '', undefined],
+      invalid: ['fooo', 'baam', 'yolo']
+    });
+
+    test({
+      validator: 'optional',
+      args: ['len', [5, 10]],
+      valid: [null, 'For realz!', '', undefined],
+      invalid: ['fooo', 'baam', 'yolo']
+    });
+  });
+  it('should validate only one condition when `progressive` is true', function () {
+    (function () {
+      var response = (new Uranus({progressive: true})).validateAll([{
+        value: 'foo@gmail',
+        rules: {
+          isEmail: true,
+          isNumeric: true
+        }
+      }]);
+      assert.equal(response.getAllMessages().length, 1);
+    }());
+    (function () {
+      var response = (new Uranus({progressive: true})).validateAll([{
+        value: 'foo@gmail.com',
+        rules: {
+          isEmail: true,
+          isNumeric: true
+        }
+      }]);
+      assert.equal(response.getAllMessages().length, 1);
+    }());
+    (function () {
+      var response = (new Uranus()).validateAll([{
+        value: 'foo@gmail',
+        rules: {
+          isEmail: true,
+          isNumeric: true
+        }
+      }]);
+      assert.equal(response.getAllMessages().length, 2);
+    }());
+    (function () {
+      var response = (new Uranus({progressive: false})).validateAll([{
+        value: 'foo@gmail.com',
+        rules: {
+          isEmail: true,
+          isNumeric: true
+        }
+      }]);
+      assert.equal(response.getAllMessages().length, 1);
+    }());
+  })
 });
