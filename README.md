@@ -1,13 +1,8 @@
-### Uranus [![Build Status](https://travis-ci.org/umayr/uranus.svg)](https://travis-ci.org/umayr/uranus)
+### Uranus [![Build Status](https://travis-ci.org/umayr/uranus.svg)](https://travis-ci.org/umayr/uranus)  [![npm version](https://badge.fury.io/js/uranus.svg)](http://badge.fury.io/js/uranus)
 
 Uranus is a wrapper validation utility over chriso's awesome [validator.js](https://github.com/chriso/validator.js) with some extra extension methods.
 
-#### Install:
-
-You can install uranus via `npm` by typing following command:
-```
- $ npm install uranus
-```
+[![NPM](https://nodei.co/npm/uranus.png)](https://npmjs.org/package/uranus)
 
 #### Tests:
 
