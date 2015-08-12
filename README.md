@@ -1,6 +1,8 @@
-### Uranus [![Build Status](https://travis-ci.org/umayr/uranus.svg)](https://travis-ci.org/umayr/uranus)   [![npm version](https://badge.fury.io/js/uranus.svg)](http://badge.fury.io/js/uranus) [![tag](https://img.shields.io/github/tag/umayr/uranus.svg)]()   [![npm](https://img.shields.io/npm/dm/uranus.svg)]()
+![Logo](http://i.imgur.com/JcjT8g5.png)
 
 Uranus is a wrapper validation utility over chriso's awesome [validator.js](https://github.com/chriso/validator.js) with some extra extension methods.
+
+[![Build Status](https://travis-ci.org/umayr/uranus.svg)](https://travis-ci.org/umayr/uranus)   [![npm version](https://badge.fury.io/js/uranus.svg)](http://badge.fury.io/js/uranus) [![tag](https://img.shields.io/github/tag/umayr/uranus.svg)]()   [![npm](https://img.shields.io/npm/dm/uranus.svg)]()
 
 [![NPM](https://nodei.co/npm/uranus.png)](https://npmjs.org/package/uranus)
 
