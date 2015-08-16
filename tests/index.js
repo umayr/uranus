@@ -5,7 +5,7 @@
 
 'use strict';
 
-var Uranus = require('../lib/index.js');
+var Uranus = require('../index.js');
 var format = require('util').format;
 
 var assert = require('assert');
