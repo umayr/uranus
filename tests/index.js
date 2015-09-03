@@ -15,7 +15,7 @@ function test(options) {
   });
   if (options.invalid) options.invalid.forEach((invalid) => {
     if (exec(invalid))
-      throw new Error(`It failed the test when it should fucking not. [Rule: ${options.validator}, Value: ${invalid}]`);
+      throw new Error(`It passed the test when it should fucking not. [Rule: ${options.validator}, Value: ${invalid}]`);
   });
 
   function exec(value) {
