@@ -10,10 +10,13 @@ Uranus is a wrapper validation utility over chriso's awesome [validator.js](http
 
 To execute tests:
 ``` bash
- # Install local dependencies
+ # clone the repo and change directory
+ $ git clone https://github.com/umayr/uranus.git && cd $_
+
+ # install local dependencies
  $ npm install
  
- # Run tests
+ # run tests
  $ npm test
 ```
 
