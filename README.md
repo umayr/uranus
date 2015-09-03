@@ -10,9 +10,6 @@ Uranus is a wrapper validation utility over chriso's awesome [validator.js](http
 
 To execute tests:
 ``` bash
- # Install globally required packages
- $ npm install -g mocha grunt-cli 
- 
  # Install local dependencies
  $ npm install
  
