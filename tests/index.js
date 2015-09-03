@@ -5,58 +5,36 @@
 
 'use strict';
 
-var Uranus = require('../index.js');
-var format = require('util').format;
-
-var assert = require('assert');
+import Uranus from '../src/index';
+import { equal } from 'assert';
 
 function test(options) {
-  if (options.valid) {
-    options.valid.forEach(function (valid) {
-      var validator = new Uranus();
-      var response = validator.validateAll([make(valid, options.validator, options.args, options.msg)]);
-      if (!response.isValid()) {
-        throw new Error(
-          format('It failed the test when it should fucking not. [Rule: %s, Value: %s]',
-            options.validator,
-            valid)
-        );
-      }
-    });
-  }
-  if (options.invalid) {
-    options.invalid.forEach(function (invalid) {
-      var validator = new Uranus();
-      var response = validator.validateAll([make(invalid, options.validator, options.args, options.msg)]);
-      if (response.isValid()) {
-        throw new Error(
-          format('It passed the test when it should fucking not. [Rule: %s, Value: %s]',
-            options.validator,
-            invalid)
-        );
-      }
-    });
+  if (options.valid) options.valid.forEach((valid) => {
+    if (!exec(valid))
+      throw new Error(`It failed the test when it should fucking not. [Rule: ${options.validator}, Value: ${valid}]`);
+  });
+  if (options.invalid) options.invalid.forEach((invalid) => {
+    if (exec(invalid))
+      throw new Error(`It failed the test when it should fucking not. [Rule: ${options.validator}, Value: ${invalid}]`);
+  });
+
+  function exec(value) {
+    let validator = new Uranus();
+    let response = validator.validateAll([make(value, options.validator, options.args, options.msg)]);
+    return response.isValid();
   }
 
   function make(value, validator, args, message) {
-    var src = {rules: {}};
+    let src = {rules: {}};
     src.value = value;
-    if (typeof args !== 'undefined') {
-      src.rules[validator] = {
-        msg: message,
-        args: args
-      };
-    }
-    else {
-      src.rules[validator] = true;
-    }
-
+    if (typeof args !== 'undefined') src.rules[validator] = {msg: message, args: args};
+    else src.rules[validator] = true;
     return src;
   }
 }
 
-describe('validator', function () {
-  it('should validate email addresses', function () {
+describe('Uranus', () => {
+  it('should validate email addresses', () => {
     test({
       validator: 'isEmail',
       valid: [
@@ -84,7 +62,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate URLs', function () {
+  it('should validate URLs', () => {
     test({
       validator: 'isUrl',
       valid: [
@@ -157,7 +135,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate IP addresses', function () {
+  it('should validate IP addresses', () => {
     test({
       validator: 'isIP',
       valid: [
@@ -228,7 +206,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate alpha strings', function () {
+  it('should validate alpha strings', () => {
     test({
       validator: 'isAlpha',
       valid: [
@@ -239,7 +217,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate alphanumeric strings', function () {
+  it('should validate alphanumeric strings', () => {
     test({
       validator: 'isAlphanumeric',
       valid: [
@@ -250,7 +228,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate numeric strings', function () {
+  it('should validate numeric strings', () => {
     test({
       validator: 'isNumeric',
       valid: [
@@ -261,7 +239,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate decimal numbers', function () {
+  it('should validate decimal numbers', () => {
     test({
       validator: 'isDecimal',
       valid: [
@@ -272,7 +250,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate lowercase strings', function () {
+  it('should validate lowercase strings', () => {
     test({
       validator: 'isLowercase',
       valid: [
@@ -283,7 +261,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate uppercase strings', function () {
+  it('should validate uppercase strings', () => {
     test({
       validator: 'isUppercase',
       valid: [
@@ -294,7 +272,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate integers', function () {
+  it('should validate integers', () => {
     test({
       validator: 'isInt',
       valid: [
@@ -306,7 +284,7 @@ describe('validator', function () {
     });
 
   });
-  it('should validate length', function () {
+  it('should validate length', () => {
 
     test({
       validator: 'len',
@@ -315,7 +293,7 @@ describe('validator', function () {
       invalid: ['Pie', 'Coke', 'Raspberry and Kiwi Cobbler']
     });
   });
-  it('should validate floats', function () {
+  it('should validate floats', () => {
     test({
       validator: 'isFloat',
       valid: [
@@ -336,7 +314,7 @@ describe('validator', function () {
     });
 
   });
-  it('should validate hexadecimal strings', function () {
+  it('should validate hexadecimal strings', () => {
     test({
       validator: 'isHexadecimal',
       valid: [
@@ -347,7 +325,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate hexadecimal color strings', function () {
+  it('should validate hexadecimal color strings', () => {
     test({
       validator: 'isHexColor',
       valid: [
@@ -358,7 +336,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate null strings', function () {
+  it('should validate null strings', () => {
     test({
       validator: 'isNull',
       valid: [
@@ -369,7 +347,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate not null strings', function () {
+  it('should validate not null strings', () => {
     test({
       validator: 'notNull',
       valid: [
@@ -380,7 +358,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate strings against an expected value', function () {
+  it('should validate strings against an expected value', () => {
     test({
       validator: 'equals',
       args: 'abc',
@@ -388,7 +366,7 @@ describe('validator', function () {
       invalid: ['Abc', '123']
     });
   });
-  it('should validate strings contain another string', function () {
+  it('should validate strings contain another string', () => {
     test({
       validator: 'contains',
       args: ['foo'],
@@ -396,7 +374,7 @@ describe('validator', function () {
       invalid: ['bar', 'fobar']
     });
   });
-  it('should validate strings against a pattern', function () {
+  it('should validate strings against a pattern', () => {
     test({
       validator: 'matches',
       args: [/abc/],
@@ -416,7 +394,7 @@ describe('validator', function () {
       invalid: ['acb']
     });
   });
-  it('should validate strings by length', function () {
+  it('should validate strings by length', () => {
     test({
       validator: 'isLength',
       args: [2],
@@ -436,7 +414,7 @@ describe('validator', function () {
       invalid: ['', '𠀋', '千竈通り']
     });
   });
-  it('should validate strings by byte length', function () {
+  it('should validate strings by byte length', () => {
     test({
       validator: 'isByteLength',
       args: [2],
@@ -450,7 +428,7 @@ describe('validator', function () {
       invalid: ['', 'a', 'abcd']
     });
   });
-  it('should validate UUIDs', function () {
+  it('should validate UUIDs', () => {
     test({
       validator: 'isUUIDv4',
       valid: [
@@ -505,7 +483,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate a string that is in another string or array', function () {
+  it('should validate a string that is in another string or array', () => {
     test({
       validator: 'isIn',
       args: ['foobar'],
@@ -536,7 +514,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate a string that is in another object', function () {
+  it('should validate a string that is in another object', () => {
     test({
       validator: 'isIn',
       args: [{
@@ -566,7 +544,7 @@ describe('validator', function () {
       invalid: ['4', '']
     });
   });
-  it('should validate dates', function () {
+  it('should validate dates', () => {
     test({
       validator: 'isDate',
       valid: [
@@ -584,7 +562,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate dates against a start date', function () {
+  it('should validate dates against a start date', () => {
     test({
       validator: 'isAfter',
       args: '2011-08-03',
@@ -600,7 +578,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate dates against an end date', function () {
+  it('should validate dates against an end date', () => {
     test({
       validator: 'isBefore',
       args: ['08/04/2011'],
@@ -627,7 +605,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate that integer strings are divisible by a number', function () {
+  it('should validate that integer strings are divisible by a number', () => {
     test({
       validator: 'isDivisibleBy',
       args: [2],
@@ -645,7 +623,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate credit cards', function () {
+  it('should validate credit cards', () => {
     test({
       validator: 'isCreditCard',
       valid: [
@@ -663,7 +641,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate JSON', function () {
+  it('should validate JSON', () => {
     test({
       validator: 'isJSON',
       valid: [
@@ -678,7 +656,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate not empty strings', function () {
+  it('should validate not empty strings', () => {
     test({
       validator: 'notEmpty',
       valid: [
@@ -689,7 +667,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate a string that is not in other string/array', function () {
+  it('should validate a string that is not in other string/array', () => {
     test({
       validator: 'notIn',
       args: ['foobar'],
@@ -720,7 +698,7 @@ describe('validator', function () {
       ]
     });
   });
-  it('should validate strings not contain another string', function () {
+  it('should validate strings not contain another string', () => {
     test({
       validator: 'notContains',
       args: ['foo'],
@@ -728,7 +706,7 @@ describe('validator', function () {
       invalid: ['foo', 'foobar', 'bazfoo']
     });
   });
-  it('should validate minimum numbers', function () {
+  it('should validate minimum numbers', () => {
     test({
       validator: 'min',
       args: 10,
@@ -736,7 +714,7 @@ describe('validator', function () {
       invalid: [1, 2.3, 9.99999]
     });
   });
-  it('should validate maximum numbers', function () {
+  it('should validate maximum numbers', () => {
     test({
       validator: 'max',
       args: 10,
@@ -744,7 +722,7 @@ describe('validator', function () {
       invalid: [101, 50, 10.0000001]
     });
   });
-  it('should validate if a regex matches', function () {
+  it('should validate if a regex matches', () => {
     test({
       validator: 'is',
       args: /^[A-Z]{4}$/,
@@ -752,7 +730,7 @@ describe('validator', function () {
       invalid: [101, 50, 10.0000001, 'FOOOOOO', 'MEH', undefined, '', null]
     });
   });
-  it('should validate if a regex doesn\'t match', function () {
+  it('should validate if a regex doesn\'t match', () => {
     test({
       validator: 'not',
       args: /^[a-z]{4}$/,
@@ -760,7 +738,7 @@ describe('validator', function () {
       invalid: ['fooo', 'baam', 'yolo']
     });
   });
-  it('should validate if an object is either null and iff its not then perform second operation', function () {
+  it('should validate if an object is either null and iff its not then perform second operation', () => {
     test({
       validator: 'optional',
       args: ['isEmail'],
@@ -789,46 +767,46 @@ describe('validator', function () {
       invalid: ['fooo', 'baam', 'yolo']
     });
   });
-  it('should validate only one condition when `progressive` is true', function () {
-    (function () {
-      var response = (new Uranus({progressive: true})).validateAll([{
+  it('should validate only one condition when `progressive` is true', () => {
+    {
+      let response = (new Uranus({progressive: true})).validateAll([{
         value: 'foo@gmail',
         rules: {
           isEmail: true,
           isNumeric: true
         }
       }]);
-      assert.equal(response.getAllMessages().length, 1);
-    }());
-    (function () {
-      var response = (new Uranus({progressive: true})).validateAll([{
+      equal(response.getAllMessages().length, 1);
+    }
+    {
+      let response = (new Uranus({progressive: true})).validateAll([{
         value: 'foo@gmail.com',
         rules: {
           isEmail: true,
           isNumeric: true
         }
       }]);
-      assert.equal(response.getAllMessages().length, 1);
-    }());
-    (function () {
-      var response = (new Uranus()).validateAll([{
+      equal(response.getAllMessages().length, 1);
+    }
+    {
+      let response = (new Uranus()).validateAll([{
         value: 'foo@gmail',
         rules: {
           isEmail: true,
           isNumeric: true
         }
       }]);
-      assert.equal(response.getAllMessages().length, 2);
-    }());
-    (function () {
-      var response = (new Uranus({progressive: false})).validateAll([{
+      equal(response.getAllMessages().length, 2);
+    }
+    {
+      let response = (new Uranus({progressive: false})).validateAll([{
         value: 'foo@gmail.com',
         rules: {
           isEmail: true,
           isNumeric: true
         }
       }]);
-      assert.equal(response.getAllMessages().length, 1);
-    }());
+      equal(response.getAllMessages().length, 1);
+    }
   })
 });
