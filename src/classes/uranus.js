@@ -25,8 +25,7 @@ export default class Uranus {
    * @constructor
    */
   constructor(options) {
-    this.options = {};
-    Object.assign(this.options, DEFAULTS, options);
+    this.options = Object.assign({}, DEFAULTS, options);
 
     this.validator = validator;
     this._registerExtensions();
