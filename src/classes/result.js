@@ -68,11 +68,12 @@ export default class ValidationResult {
    */
   getAllMessages() {
     let errors = [];
-    this.items.map((item) => {
-      for (let [key/*, rule*/] of entries(item)) {
-        if (!item[key].isValid()) errors.push(item[key].getMessage());
+
+    for (let [, object] of entries(this.items)) {
+      for (let [name] of entries(object)) {
+        if (!object[name].isValid()) errors.push(object[name].getMessage());
       }
-    });
+    }
     return errors;
   }
 }

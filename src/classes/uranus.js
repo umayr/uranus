@@ -106,6 +106,16 @@ export default class Uranus {
     return [_validity, _result];
   }
 
+  _validateObject(src, rules) {
+    let _validity = true;
+    let _items = [];
+
+    for (let [key, tests] of utils.entries(rules)) {
+      [_validity, _items[key]] = this._validateOne(src[key], tests);
+    }
+    return new ValidationResult(_validity, _items);
+  }
+
   /**
    * Method to perform validation.
    *
@@ -113,7 +123,8 @@ export default class Uranus {
    * @returns {*}
    */
   validateAll(src) {
-    if (Array.isArray(src)) return this._validateArray(src);
+    if (Array.isArray(src)) return this._validateArray(...arguments);
+    else if (src instanceof Object) return this._validateObject(...arguments);
     else throw new Error('Uranus only support array at the moment. Usage: https://github.com/umayr/uranus/blob/develop/README.md#usage');
   }
 
@@ -143,9 +154,20 @@ export default class Uranus {
    * @param options
    * @returns {ValidationResult}
    */
-  static validateAll(src, options) {
+  static validateAll(src) {
+    let args = Array.from(arguments);
+    let options;
+
+    if (Array.isArray(src) && typeof args[1] !== 'undefined') {
+      options = args[1];
+      args.pop();
+    }
+    if (src instanceof Object && typeof args[2] !== 'undefined') {
+      options = args[2];
+      args.pop();
+    }
     let instance = new Uranus(options);
-    return instance.validateAll(src);
+    return instance.validateAll(...args);
   }
 
   /**
