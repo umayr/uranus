@@ -13,7 +13,7 @@ import * as utils from '../utils/index';
 import ValidationItem from './item';
 import ValidationResult from './result';
 
-const DEFAULT = {
+const DEFAULTS = {
   progressive: false
 };
 
@@ -24,10 +24,11 @@ export default class Uranus {
    * @param options
    * @constructor
    */
-  constructor(options = DEFAULT) {
-    this.options = options;
-    this.validator = validator;
+  constructor(options) {
+    this.options = {};
+    Object.assign(this.options, DEFAULTS, options);
 
+    this.validator = validator;
     this._registerExtensions();
   }
 
@@ -134,5 +135,29 @@ export default class Uranus {
    */
   validateOne(value, rules) {
     return new ValidationResult(...this._validateOne(value, rules));
+  }
+
+  /**
+   * Syntactic static sugar over `validateAll` instance method.
+   *
+   * @param src
+   * @param options
+   * @returns {ValidationResult}
+   */
+  static validateAll(src, options) {
+    let instance = new Uranus(options);
+    return instance.validateAll(src);
+  }
+
+  /**
+   * Syntactic static sugar over `validateOne` instance method.
+   *
+   * @param src
+   * @param options
+   * @returns {*}
+   */
+  static validateOne(value, rules, options) {
+    let instance = new Uranus(options);
+    return instance.validateOne(value, rules);
   }
 }
