@@ -26,8 +26,7 @@ After installing uranus, you can simply use it as:
 
 ``` javascript
  var Uranus = require('uranus');
- var validator = new Uranus();
- var result = validator.validateAll([
+ var result = Uranus.validateAll([
  {
     value: '@foo.com',
     rules: {
@@ -46,10 +45,49 @@ After installing uranus, you can simply use it as:
  console.log(result.isValid()) // false
 ```
 
+There are several ways to apply validations. For bulk validation you can use `validateAll` which supports both `array` and `object`.
+
+``` javascript
+ var Uranus = require('uranus');
+ 
+ // For Arrays.
+ var result = Uranus.validateAll([
+ {
+    value: 'foo@gmail.com',
+    rules: {
+      isEmail: true
+    }
+ },{
+    value: 'Neptune',
+    rules: {
+      isAlpha: true,
+    }
+ }]);
+ console.log(result.isValid()) // true
+ 
+ // For objects.
+ var src = {
+    name: 'Neptune',
+    email: 'foo@gmail.com'
+  };
+  
+  var rules = {
+    name: {
+      isAlpha: true
+    },
+    email: {
+      isEmail: true
+    }
+  }
+var result = Uranus.validateAll(src, rules);
+console.log(result.isValid()) // true
+
+```
+
 By default uranus sets error messages itself like `Validation ``<rulename>`` failed.` but you can set your own error messages.
 
 ``` javascript
-var result = validator.validateAll([
+var result = Uranus.validateAll([
  {
     value: '@foo.com',
     rules: {
@@ -81,7 +119,52 @@ var result = validator.validateAll([
  }]);
 ```
 
-By default it validates all the rules for all value sets but if you set `progressive` to `true` while creating validator instance, it will stop iterating through rules when one fails. In that way you can get only one error message for one value instead of getting all, for example:
+For validating one single value, you can use `validateOne` as:
+
+``` javascript
+var value = 'foo@email.com';
+var rules = {
+   isEmail: true,
+   notNull: true
+};
+
+Uranus.validateOne(value, rules);
+```
+
+Both `validateOne` & `validateAll` methods can also be accessed by creating an instance of Uranus. For example:
+
+``` javascript
+ var Uranus = require('uranus');
+ var validator = new Uranus();
+ 
+ // validateAll
+ var result = validator.validateAll([
+ {
+    value: 'foo@gmail.com',
+    rules: {
+      isEmail: true
+    }
+ },{
+    value: 'Neptune',
+    rules: {
+      isAlpha: true,
+    }
+ }]);
+ console.log(result.isValid()) // true
+ 
+ // validateOne
+ var value = 'foo@email.com';
+ var rules = {
+  isEmail: true,
+  notNull: true
+ };
+  
+ var result = validator.validateOne(value, rules);
+ console.log(result.isValid()) // true
+ 
+```
+
+By default `validateAll` validates all the rules for all value sets but if you set `progressive` to `true` while creating `Uranus` instance, it will stop iterating through rules when one fails. In that way you can get only one error message for one value instead of getting all, for example:
 
 ``` javascript
 var validator = new Uranus({ progressive: true });
@@ -103,6 +186,7 @@ var result = validator.validateAll([
  console.log(result.getAllMessages())
  // ["Boo! email is invalid"]
 ```
+Note: In case of static methods, options can be provided as the last argument.
 
 Later you can get all of these messages by `getAllMessages()` method. For example,
 
