@@ -45,7 +45,7 @@ function test(options) {
 }
 
 describe('Uranus', () => {
-  describe('#validator', () => {
+  describe('#core', () => {
     it('should validate email addresses', () => {
       test({
         validator: 'isEmail',
@@ -297,7 +297,6 @@ describe('Uranus', () => {
 
     });
     it('should validate length', () => {
-
       test({
         validator: 'len',
         args: [5, 10],
@@ -893,6 +892,83 @@ describe('Uranus', () => {
         }]);
         equal(response.getAllMessages().length, 2);
       }
+    });
+  });
+  describe('#objects', () => {
+    it('should validate all valid rules when provided in object literal', () => {
+      let src = {
+        firstName: 'umayr',
+        lastName: 'shahid',
+        email: 'umayr.shahid@tenpearls.com'
+      };
+
+      let rules = {
+        firstName: {
+          notNull: true,
+          isAlpha: true,
+          len: [10, 100]
+        },
+        lastName: {
+          notNull: true,
+          isAlpha: true,
+          len: [10, 100]
+        },
+        email: {
+          notNull: true,
+          isEmail: true
+        }
+      }
+      equal(Uranus.validateAll(src, rules).isValid(), true);
+    });
+    it('should validate all invalid rules when provided in object literal', () => {
+      let src = {
+        firstName: null,
+        lastName: null,
+        email: null
+      };
+
+      let rules = {
+        firstName: {
+          notNull: true,
+          isAlpha: true
+        },
+        lastName: {
+          notNull: true,
+          isAlpha: true
+        },
+        email: {
+          notNull: true,
+          isEmail: true
+        }
+      }
+      let result = Uranus.validateAll(src, rules);
+      equal(result.isValid(), false);
+      equal(result.getAllMessages().length, 6);
+    });
+    it('should only return one error message when progressive is `true`', () => {
+      let src = {
+        firstName: null,
+        lastName: null,
+        email: null
+      };
+
+      let rules = {
+        firstName: {
+          notNull: true,
+          isAlpha: true
+        },
+        lastName: {
+          notNull: true,
+          isAlpha: true
+        },
+        email: {
+          notNull: true,
+          isEmail: true
+        }
+      }
+      let result = Uranus.validateAll(src, rules, {progressive: true});
+      equal(result.isValid(), false);
+      equal(result.getAllMessages().length, 3);
     });
   });
 });
