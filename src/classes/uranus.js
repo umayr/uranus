@@ -51,7 +51,7 @@ export default class Uranus {
    * @returns {*}
    * @private
    */
-  _validate(value, test, rule) {
+  _exec(value, test, rule) {
     if (typeof this.validator[rule] !== 'function') throw new Error(`Invalid validator function: ${rule}`);
 
     let validatorArgs = test.args || test;
@@ -75,25 +75,35 @@ export default class Uranus {
     let _validity = true;
     let _items = [];
     src.map((item, index) => {
-      let value = item.value;
-      let rules = item.rules;
-      _items[index] = {};
-
-      for (let [rule, test] of utils.entries(rules)) {
-        if (['isUrl', 'isURL', 'isEmail'].indexOf(rule) !== -1) {
-          if (typeof test === 'object' && test !== null && test.msg) test = {msg: test.msg};
-          else if (test) test = {};
-        }
-
-        if (!this._validate(value, test, rule)) {
-          _validity = false;
-          _items[index][rule] = new ValidationItem(false, test.msg || `Validation \`${rule}\` failed.`);
-          if (this.options.progressive) break;
-        }
-        else _items[index][rule] = new ValidationItem(true);
-      }
+      [_validity, _items[index]] = this._validateOne(item.value, item.rules);
     });
     return new ValidationResult(_validity, _items);
+  }
+
+  /**
+   * Inner method to perform validation over a single item.
+   * @param value
+   * @param rules
+   * @returns {*[]}
+   * @private
+   */
+  _validateOne(value, rules) {
+    let _validity = true;
+    let _result = {};
+    for (let [rule, test] of utils.entries(rules)) {
+      if (['isUrl', 'isURL', 'isEmail'].indexOf(rule) !== -1) {
+        if (typeof test === 'object' && test !== null && test.msg) test = {msg: test.msg};
+        else if (test) test = {};
+      }
+
+      if (!this._exec(value, test, rule)) {
+        _validity = false;
+        _result[rule] = new ValidationItem(false, test.msg || `Validation \`${rule}\` failed.`);
+        if (this.options.progressive) break;
+      }
+      else _result[rule] = new ValidationItem(true);
+    }
+    return [_validity, _result];
   }
 
   /**
@@ -105,5 +115,24 @@ export default class Uranus {
   validateAll(src) {
     if (Array.isArray(src)) return this._validateArray(src);
     else throw new Error('Uranus only support array at the moment. Usage: https://github.com/umayr/uranus/blob/develop/README.md#usage');
+  }
+
+  /**
+   * Performs validation over a single value.
+   * @param value
+   * @param rules
+   * @returns {ValidationResult}
+   *
+   * @example
+   *  var value = 'foo@email.com';
+   *  var rules = {
+   *     isEmail: true,
+   *     notNull: true
+   *  };
+   *
+   *  validator.validateOne(value, rules);
+   */
+  validateOne(value, rules) {
+    return new ValidationResult(...this._validateOne(value, rules));
   }
 }
