@@ -8,29 +8,40 @@
 import Uranus from '../src/index';
 import { equal } from 'assert';
 
-function test(options) {
-  if (options.valid) options.valid.forEach((valid) => {
-    if (!exec(valid))
-      throw new Error(`It failed the test when it should fucking not. [Rule: ${options.validator}, Value: ${valid}]`);
-  });
-  if (options.invalid) options.invalid.forEach((invalid) => {
-    if (exec(invalid))
-      throw new Error(`It passed the test when it should fucking not. [Rule: ${options.validator}, Value: ${invalid}]`);
-  });
-
-  function exec(value) {
-    let validator = new Uranus();
-    let response = validator.validateAll([make(value, options.validator, options.args, options.msg)]);
-    return response.isValid();
-  }
-
-  function make(value, validator, args, message) {
-    let src = {rules: {}};
-    src.value = value;
-    if (typeof args !== 'undefined') src.rules[validator] = {msg: message, args: args};
-    else src.rules[validator] = true;
+let prepare = {
+  all: function (value, rule, message, args) {
+    let src = {rules: {}, value: value};
+    if (typeof args !== 'undefined') src.rules[rule] = {msg: message, args: args};
+    else src.rules[rule] = true;
+    return src;
+  },
+  one: function (rule, message, args) {
+    let src = {};
+    if (typeof args !== 'undefined') src[rule] = {msg: message, args: args};
+    else src[rule] = true;
     return src;
   }
+}
+
+function exec(options, value, expected) {
+  if ((new Uranus()).validateAll([prepare.all(value, options.validator, options.msg, options.args)]).isValid() !== expected)
+    fail('validateAll', options.validator, value, expected)
+
+  if ((new Uranus()).validateOne(value, prepare.one(options.validator, options.msg, options.args)).isValid() !== expected)
+    fail('validateOne', options.validator, value, expected)
+}
+
+function fail(method, rule, value, expected) {
+  throw new Error(`[${method}] It ${expected ? 'failed' : 'passed'} the test when it should fucking not. [Rule: ${rule}, Value: ${value}]`);
+}
+
+function test(options) {
+  if (options.valid) options.valid.forEach((valid) => {
+    exec(options, valid, true);
+  });
+  if (options.invalid) options.invalid.forEach((invalid) => {
+    exec(options, invalid, false);
+  });
 }
 
 describe('Uranus', () => {
