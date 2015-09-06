@@ -4,7 +4,10 @@ Uranus is a wrapper validation utility over chriso's awesome [validator.js](http
 
 [![Build Status](https://travis-ci.org/umayr/uranus.svg)](https://travis-ci.org/umayr/uranus)   [![npm version](https://badge.fury.io/js/uranus.svg)](http://badge.fury.io/js/uranus) [![tag](https://img.shields.io/github/tag/umayr/uranus.svg)]()   [![npm](https://img.shields.io/npm/dm/uranus.svg)]() [![Code Climate](https://codeclimate.com/github/umayr/uranus/badges/gpa.svg)](https://codeclimate.com/github/umayr/uranus)
 
-[![NPM](https://nodei.co/npm/uranus.png)](https://npmjs.org/package/uranus)
+#### Installation:
+```
+ $ npm install --save uranus
+```
 
 #### Tests:
 
