@@ -17,7 +17,7 @@ export default class ValidationResult {
    */
   constructor(validity, items) {
     this.validity = validity;
-    this.items = items;
+    this.items = Array.isArray(items) ? items : [items];
   }
 
   /**
@@ -68,7 +68,6 @@ export default class ValidationResult {
    */
   getAllMessages() {
     let errors = [];
-
     for (let [, object] of entries(this.items)) {
       for (let [name] of entries(object)) {
         if (!object[name].isValid()) errors.push(object[name].getMessage());
