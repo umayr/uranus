@@ -35,10 +35,6 @@ function exec(options, value, expected) {
   if (one.isValid() !== expected)
     fail('validateOne', options.validator, value, expected)
 
-  if (!all.isValid() || !one.isValid()) {
-    console.log(all.getAllMessages());
-    console.log(one.getAllMessages());
-  }
 }
 
 function fail(method, rule, value, expected) {
@@ -535,7 +531,7 @@ describe('Uranus', () => {
         ]
       });
     });
-    it.only('should validate a string that is in another object', () => {
+    it('should validate a string that is in another object', () => {
       test({
         validator: 'isIn',
         args: [{
@@ -759,7 +755,7 @@ describe('Uranus', () => {
         invalid: ['fooo', 'baam', 'yolo']
       });
     });
-    xit('should validate if an object is either null and iff its not then perform second operation', () => {
+    it('should validate if an object is either null and iff its not then perform second operation', () => {
       test({
         validator: 'optional',
         args: ['isEmail'],
