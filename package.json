@@ -5,10 +5,11 @@
   "main": "./dist/index.js",
   "scripts": {
     "eslint": "./node_modules/.bin/eslint --config ./.eslintrc ./src/. || true",
-    "build": "./node_modules/.bin/babel --optional runtime --no-non-standard --out-dir ./dist/. ./src/. || true",
-    "pretest": "npm run eslint",
+    "build": "./node_modules/.bin/babel --modules umd --optional runtime --source-maps --no-non-standard --out-dir ./dist/. ./src/. || true",
     "prepublish": "npm run build",
-    "test": "./node_modules/.bin/mocha --compilers js:babel/register -R spec tests/."
+    "pretest": "npm run eslint",
+    "test": "./node_modules/.bin/mocha --compilers js:babel/register --reporter spec tests/.",
+    "debug": "./node_modules/.bin/mocha --compilers js:babel/register --reporter spec --inline-diffs --watch test/."
   },
   "repository": {
     "type": "git",
