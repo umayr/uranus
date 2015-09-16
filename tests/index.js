@@ -24,11 +24,17 @@ let prepare = {
 }
 
 function exec(options, value, expected) {
-  if (Uranus.validateAll([prepare.all(value, options.validator, options.msg, options.args)]).isValid() !== expected)
+
+  let [all, one] = [
+    Uranus.validateAll([prepare.all(value, options.validator, options.msg, options.args)]),
+    Uranus.validateOne(value, prepare.one(options.validator, options.msg, options.args))
+  ];
+  if (all.isValid() !== expected)
     fail('validateAll', options.validator, value, expected)
 
-  if (Uranus.validateOne(value, prepare.one(options.validator, options.msg, options.args)).isValid() !== expected)
+  if (one.isValid() !== expected)
     fail('validateOne', options.validator, value, expected)
+
 }
 
 function fail(method, rule, value, expected) {

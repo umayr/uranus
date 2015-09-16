@@ -87,7 +87,7 @@ console.log(result.isValid()) // true
 
 ```
 
-By default uranus sets error messages itself like `Validation ``<rulename>`` failed.` but you can set your own error messages.
+By default Uranus generates subject less error messages itself with the help of [Cressida](https://github.com/umayr/cressida/blob/master/README.md) but you can set your own error messages.
 
 ``` javascript
 var result = Uranus.validateAll([

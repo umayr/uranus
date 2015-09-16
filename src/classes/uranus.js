@@ -6,6 +6,7 @@
 'use strict';
 
 import validator from 'validator';
+import cressida from 'cressida';
 
 import * as extensions from '../utils/extensions';
 import * as utils from '../utils/index';
@@ -26,7 +27,7 @@ export default class Uranus {
    */
   constructor(options) {
     this.options = Object.assign({}, DEFAULTS, options);
-
+    this.message = cressida.create({includeName: false});
     this.validator = validator;
     this._registerExtensions();
   }
@@ -61,7 +62,26 @@ export default class Uranus {
       else validatorArgs = [validatorArgs];
     }
     else validatorArgs = validatorArgs.slice(0);
-    return this.validator[rule].apply(validator, [value].concat(validatorArgs));
+    let args = [value].concat(validatorArgs);
+    return [!this.validator[rule].apply(validator, args), this._message(rule, args)];
+  }
+
+  /**
+   * Generates message using `cressida`.
+   *
+   * @param rule
+   * @param args
+   * @returns {*}
+   * @private
+   */
+  _message(rule, args) {
+    args.shift();
+    if (rule === 'optional') {
+      rule = args[0];
+      args.shift();
+    }
+    if (rule === 'is' || rule === 'not') rule = rule.repeat(2);
+    return this.message(rule, args);
   }
 
   /**
@@ -96,9 +116,11 @@ export default class Uranus {
         else if (test) test = {};
       }
 
-      if (!this._exec(value, test, rule)) {
+      let [invalid, message] = this._exec(value, test, rule);
+
+      if (invalid) {
         _validity = false;
-        _result[rule] = new ValidationItem(false, test.msg || `Validation \`${rule}\` failed.`);
+        _result[rule] = new ValidationItem(false, test.msg || message || `Validation \`${rule}\` failed.`);
         if (this.options.progressive) break;
       }
       else _result[rule] = new ValidationItem(true);
