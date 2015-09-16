@@ -24,11 +24,21 @@ let prepare = {
 }
 
 function exec(options, value, expected) {
-  if (Uranus.validateAll([prepare.all(value, options.validator, options.msg, options.args)]).isValid() !== expected)
+
+  let [all, one] = [
+    Uranus.validateAll([prepare.all(value, options.validator, options.msg, options.args)]),
+    Uranus.validateOne(value, prepare.one(options.validator, options.msg, options.args))
+  ];
+  if (all.isValid() !== expected)
     fail('validateAll', options.validator, value, expected)
 
-  if (Uranus.validateOne(value, prepare.one(options.validator, options.msg, options.args)).isValid() !== expected)
+  if (one.isValid() !== expected)
     fail('validateOne', options.validator, value, expected)
+
+  if (!all.isValid() || !one.isValid()) {
+    console.log(all.getAllMessages());
+    console.log(one.getAllMessages());
+  }
 }
 
 function fail(method, rule, value, expected) {
@@ -525,7 +535,7 @@ describe('Uranus', () => {
         ]
       });
     });
-    it('should validate a string that is in another object', () => {
+    it.only('should validate a string that is in another object', () => {
       test({
         validator: 'isIn',
         args: [{
@@ -749,7 +759,7 @@ describe('Uranus', () => {
         invalid: ['fooo', 'baam', 'yolo']
       });
     });
-    it('should validate if an object is either null and iff its not then perform second operation', () => {
+    xit('should validate if an object is either null and iff its not then perform second operation', () => {
       test({
         validator: 'optional',
         args: ['isEmail'],

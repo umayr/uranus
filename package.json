@@ -36,6 +36,7 @@
     "library"
   ],
   "dependencies": {
+    "cressida": "^0.3.0",
     "validator": "^4.0.0"
   }
 }
