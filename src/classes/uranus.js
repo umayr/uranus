@@ -62,10 +62,26 @@ export default class Uranus {
       else validatorArgs = [validatorArgs];
     }
     else validatorArgs = validatorArgs.slice(0);
-    // TODO: clean this shit.
     let args = [value].concat(validatorArgs);
+    return [!this.validator[rule].apply(validator, args), this._message(rule, args)];
+  }
+
+  /**
+   * Generates message using `cressida`.
+   *
+   * @param rule
+   * @param args
+   * @returns {*}
+   * @private
+   */
+  _message(rule, args) {
     args.shift();
-    return [!this.validator[rule].apply(validator, [value].concat(validatorArgs)), this.message(rule, args)];
+    if (rule === 'optional') {
+      rule = args[0];
+      args.shift();
+    }
+    if (rule === 'is' || rule === 'not') rule = rule.repeat(2);
+    return this.message(rule, args);
   }
 
   /**
