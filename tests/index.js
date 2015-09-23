@@ -977,4 +977,30 @@ describe('Uranus', () => {
       equal(result.getAllMessages().length, 3);
     });
   });
+
+  describe('#array', () => {
+    it('should be false if either one of item is invalid in array', () => {
+      let validator = new Uranus();
+
+      let result = validator.validateAll([{
+        value: '',
+        rules: {
+          notNull: {
+            args: true,
+            msg: 'Foo is required.'
+          }
+        }
+      }, {
+        value: 'Foo',
+        rules: {
+          notNull: {
+            args: true,
+            msg: 'Foo is required.'
+          }
+        }
+      }]);
+
+      equal(false, result.isValid());
+    });
+  })
 });

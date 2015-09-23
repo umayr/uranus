@@ -95,7 +95,8 @@ export default class Uranus {
     let _validity = true;
     let _items = [];
     src.map((item, index) => {
-      [_validity, _items[index]] = this._validateOne(item.value, item.rules);
+      let [__validity, __result] = this._validateOne(item.value, item.rules);
+      [_validity, _items[index]] = [!_validity ? _validity : __validity, __result];
     });
     return new ValidationResult(_validity, _items);
   }
