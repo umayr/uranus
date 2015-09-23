@@ -7,7 +7,7 @@
     "eslint": "./node_modules/.bin/eslint --config ./.eslintrc ./src/. || true",
     "build": "./node_modules/.bin/babel --modules umd --optional runtime --source-maps --no-non-standard --out-dir ./dist/. ./src/. || true",
     "prepublish": "npm run build",
-    "pretest": "npm run eslint",
+    "pretest": "npm run eslint && npm run build",
     "test": "./node_modules/.bin/mocha --compilers js:babel/register --reporter spec tests/.",
     "debug": "./node_modules/.bin/mocha --compilers js:babel/register --reporter spec --inline-diffs --watch test/."
   },
@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "babel-runtime": "^5.8.20",
-    "cressida": "^0.3.0",
+    "cressida": "^0.4.0",
     "validator": "^4.0.0"
   }
 }
