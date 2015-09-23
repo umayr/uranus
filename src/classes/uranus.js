@@ -80,7 +80,7 @@ export default class Uranus {
       rule = args[0];
       args.shift();
     }
-    if (rule === 'is' || rule === 'not') rule = rule.repeat(2);
+    if (rule === 'is' || rule === 'not') rule += rule;
     return this.message(rule, args);
   }
 
