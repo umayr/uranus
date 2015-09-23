@@ -5,7 +5,7 @@
 
 'use strict';
 
-import Uranus from '../src/index';
+import Uranus from '../dist';
 import { equal } from 'assert';
 
 let prepare = {
