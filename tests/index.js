@@ -5,7 +5,7 @@
 
 'use strict';
 
-import Uranus from '../dist';
+import Uranus from '../dist/index.js';
 import { equal } from 'assert';
 
 let prepare = {
@@ -21,7 +21,7 @@ let prepare = {
     else src[rule] = true;
     return src;
   }
-}
+};
 
 function exec(options, value, expected) {
 
@@ -977,9 +977,8 @@ describe('Uranus', () => {
       equal(result.getAllMessages().length, 3);
     });
   });
-
   describe('#array', () => {
-    it('should be false if either one of item is invalid in array', () => {
+    it.only('should be false if any one of item is invalid in array', () => {
       let validator = new Uranus();
 
       let result = validator.validateAll([{
@@ -1002,5 +1001,5 @@ describe('Uranus', () => {
 
       equal(false, result.isValid());
     });
-  })
+  });
 });
