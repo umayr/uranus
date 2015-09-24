@@ -15,7 +15,8 @@ import ValidationItem from './item';
 import ValidationResult from './result';
 
 const DEFAULTS = {
-  progressive: false
+  progressive: false,
+  includeName: true
 };
 
 export default class Uranus {
@@ -27,7 +28,7 @@ export default class Uranus {
    */
   constructor(options) {
     this.options = Object.assign({}, DEFAULTS, options);
-    this.message = cressida.create({includeName: false});
+    this.message = cressida.create({includeName: this.options.includeName});
     this.validator = validator;
     this._registerExtensions();
   }
@@ -49,10 +50,11 @@ export default class Uranus {
    * @param value
    * @param test
    * @param rule
+   * @param name
    * @returns {*}
    * @private
    */
-  _exec(value, test, rule) {
+  _exec(value, test, rule, name) {
     if (typeof this.validator[rule] !== 'function') throw new Error(`Invalid validator function: ${rule}`);
 
     let validatorArgs = test.args || test;
@@ -63,7 +65,7 @@ export default class Uranus {
     }
     else validatorArgs = validatorArgs.slice(0);
     let args = [value].concat(validatorArgs);
-    return [!this.validator[rule].apply(validator, args), this._message(rule, args)];
+    return [!this.validator[rule].apply(validator, args), this._message(rule, args, name)];
   }
 
   /**
@@ -71,17 +73,18 @@ export default class Uranus {
    *
    * @param rule
    * @param args
+   * @param name
    * @returns {*}
    * @private
    */
-  _message(rule, args) {
+  _message(rule, args, name) {
     args.shift();
     if (rule === 'optional') {
       rule = args[0];
       args.shift();
     }
     if (rule === 'is' || rule === 'not') rule += rule;
-    return this.message(rule, args);
+    return this.options.includeName && name !== null ? this.message(name, rule, args) : this.message(rule, args);
   }
 
   /**
@@ -95,7 +98,8 @@ export default class Uranus {
     let _validity = true;
     let _items = [];
     src.map((item, index) => {
-      let [__validity, __result] = this._validateOne(item.value, item.rules);
+      let src = item.name ? {value: item.value, name: item.name} : item.value;
+      let [__validity, __result] = this._validateOne(src, item.rules);
       [_validity, _items[index]] = [!_validity ? _validity : __validity, __result];
     });
     return new ValidationResult(_validity, _items);
@@ -103,21 +107,29 @@ export default class Uranus {
 
   /**
    * Inner method to perform validation over a single item.
-   * @param value
+   * @param src
    * @param rules
    * @returns {*[]}
    * @private
    */
-  _validateOne(value, rules) {
+  _validateOne(src, rules) {
     let _validity = true;
     let _result = {};
+    let _value = null;
+    let _name = null;
+
+    if (typeof src === 'object' && src !== null && src.constructor.name === 'Object' && src.name && src.value) {
+      _name = src.name;
+      _value = src.value;
+    }
+    else _value = src;
+
     for (let [rule, test] of utils.entries(rules)) {
       if (['isUrl', 'isURL', 'isEmail'].indexOf(rule) !== -1) {
         if (typeof test === 'object' && test !== null && test.msg) test = {msg: test.msg};
         else if (test) test = {};
       }
-
-      let [invalid, message] = this._exec(value, test, rule);
+      let [invalid, message] = this._exec(_value, test, rule, _name);
 
       if (invalid) {
         _validity = false;
@@ -174,7 +186,6 @@ export default class Uranus {
    * Syntactic static sugar over `validateAll` instance method.
    *
    * @param src
-   * @param options
    * @returns {ValidationResult}
    */
   static validateAll(src) {
@@ -196,7 +207,8 @@ export default class Uranus {
   /**
    * Syntactic static sugar over `validateOne` instance method.
    *
-   * @param src
+   * @param value
+   * @param rules
    * @param options
    * @returns {*}
    */

@@ -5,17 +5,17 @@
 
 'use strict';
 
-import Uranus from '../dist/index.js';
+import Uranus from '../dist/';
 import { equal } from 'assert';
 
 let prepare = {
-  all: function (value, rule, message, args) {
+  all(value, rule, message, args) {
     let src = {rules: {}, value};
     if (typeof args !== 'undefined') src.rules[rule] = {msg: message, args: args};
     else src.rules[rule] = true;
     return src;
   },
-  one: function (rule, message, args) {
+  one(rule, message, args) {
     let src = {};
     if (typeof args !== 'undefined') src[rule] = {msg: message, args: args};
     else src[rule] = true;
@@ -29,11 +29,9 @@ function exec(options, value, expected) {
     Uranus.validateAll([prepare.all(value, options.validator, options.msg, options.args)]),
     Uranus.validateOne(value, prepare.one(options.validator, options.msg, options.args))
   ];
-  if (all.isValid() !== expected)
-    fail('validateAll', options.validator, value, expected)
+  if (all.isValid() !== expected) fail('validateAll', options.validator, value, expected);
 
-  if (one.isValid() !== expected)
-    fail('validateOne', options.validator, value, expected)
+  if (one.isValid() !== expected) fail('validateOne', options.validator, value, expected);
 
 }
 
@@ -899,6 +897,16 @@ describe('Uranus', () => {
         equal(response.getAllMessages().length, 2);
       }
     });
+    it('should not generate messages with name when `includeName` is false', () => {
+      let response = (new Uranus({includeName: false})).validateAll([{
+        value: 'foo@gmail!!!.com',
+        name: 'Foo',
+        rules: {
+          isEmail: true
+        }
+      }]);
+      equal(response.getAllMessages()[0], 'should be a valid email address.');
+    });
   });
   describe('#objects', () => {
     it('should validate all valid rules when provided in object literal', () => {
@@ -923,7 +931,7 @@ describe('Uranus', () => {
           notNull: true,
           isEmail: true
         }
-      }
+      };
       equal(Uranus.validateAll(src, rules).isValid(), true);
     });
     it('should validate all invalid rules when provided in object literal', () => {
@@ -946,7 +954,7 @@ describe('Uranus', () => {
           notNull: true,
           isEmail: true
         }
-      }
+      };
       let result = Uranus.validateAll(src, rules);
       equal(result.isValid(), false);
       equal(result.getAllMessages().length, 6);
@@ -971,7 +979,7 @@ describe('Uranus', () => {
           notNull: true,
           isEmail: true
         }
-      }
+      };
       let result = Uranus.validateAll(src, rules, {progressive: true});
       equal(result.isValid(), false);
       equal(result.getAllMessages().length, 3);
@@ -1000,6 +1008,79 @@ describe('Uranus', () => {
       }]);
 
       equal(false, result.isValid());
+    });
+  });
+  describe('#cressida', () => {
+    it('should generate verbose validation error messages with or without name', () => {
+      let noName = Uranus.validateOne('Foo', {
+        isEmail: true
+      });
+
+      equal(noName.getAllMessages()[0], 'should be a valid email address.');
+
+      let withName = Uranus.validateOne({
+        value: 'foo',
+        name: 'Foo'
+      }, {
+        isEmail: true
+      });
+
+      equal(withName.getAllMessages()[0], 'Foo should be a valid email address.');
+    });
+
+    it('should generate messages with name when an array is provided to `validateAll`', () => {
+
+      let noName = Uranus.validateAll([
+        {
+          value: 'foo',
+          rules: {
+            isEmail: true
+          }
+        }
+      ]);
+
+      equal(noName.getAllMessages()[0], 'should be a valid email address.');
+
+      let withName = Uranus.validateAll([
+        {
+          value: 'foo',
+          name: 'Foo',
+          rules: {
+            isEmail: true
+          }
+        }
+      ]);
+
+      equal(withName.getAllMessages()[0], 'Foo should be a valid email address.');
+
+    });
+
+    it('should generate messages with name when an object is provided to `validateAll`', () => {
+
+      let result;
+      let noName = {
+        email: 'foo'
+      };
+
+      let withName = {
+        email: {
+          value: 'foo',
+          name: 'Foo'
+        }
+      };
+
+      let rules = {
+        email: {
+          isEmail: true
+        }
+      };
+
+      result = Uranus.validateAll(noName, rules);
+      equal(result.getAllMessages()[0], 'should be a valid email address.');
+
+      result = Uranus.validateAll(withName, rules);
+      equal(result.getAllMessages()[0], 'Foo should be a valid email address.');
+
     });
   });
 });
