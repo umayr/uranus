@@ -5,11 +5,12 @@
   "main": "./dist/index.js",
   "scripts": {
     "eslint": "./node_modules/.bin/eslint --config ./.eslintrc ./src/. || true",
-    "build": "./node_modules/.bin/babel --modules umd --optional runtime --source-maps --no-non-standard --out-dir ./dist/. ./src/. || true",
+    "clean": "rm -rf ./dist/",
+    "build": "npm run clean && ./node_modules/.bin/babel --modules umd --optional runtime --source-maps inline --no-non-standard --out-dir ./dist/. ./src/. || true",
     "prepublish": "npm run build",
     "pretest": "npm run eslint && npm run build",
     "test": "./node_modules/.bin/mocha --compilers js:babel/register --reporter spec tests/.",
-    "debug": "./node_modules/.bin/mocha --compilers js:babel/register --reporter spec --inline-diffs --watch tests/."
+    "debug": "./node_modules/.bin/mocha --compilers js:babel/register --reporter spec --debug-brk --inline-diffs --watch tests/."
   },
   "repository": {
     "type": "git",
