@@ -87,7 +87,61 @@ console.log(result.isValid()) // true
 
 ```
 
-By default Uranus generates subject less error messages itself with the help of [Cressida](https://github.com/umayr/cressida/blob/master/README.md) but you can set your own error messages.
+By default Uranus generates subject less error messages itself with the help of [Cressida](https://github.com/umayr/cressida/blob/master/README.md). For e.g:
+
+``` javascript
+var rules = {
+   isEmail: true
+};
+Uranus.validateOne('foo@..!!.com', rules);
+
+// ['should be a valid email address.']
+```
+By default these messages are subjectless. To specify a name, you can do something like this:
+
+``` javascript
+// For `validateOne()`:
+
+var rules = {
+   isEmail: true
+};
+Uranus.validateOne({value: 'foo@..!!.com', name: 'Foo'}, rules);
+// ['Foo should be a valid email address.']
+
+// For `validateAll()` with an array:
+
+var result = Uranus.validateAll([
+        {
+          value: 'foo',
+          name: 'Foo',
+          rules: {
+            isEmail: true
+          }
+        }
+      ], {
+        includeName: true
+      });
+// ['Foo should be a valid email address.']
+
+// For `validateAll()` with an object:
+
+var src = {
+    email: {
+       name: 'Foo',
+       value: 'foo@!!!.com'
+   }
+  };
+
+  var rules = {
+    email: {
+      isEmail: true
+    }
+  }
+Uranus.validateAll(src, rules);
+// ['Foo should be a valid email address.']
+```
+
+This feature can be turned off with `includeName` set to false in `options` moreover you can set your own error messages.
 
 ``` javascript
 var result = Uranus.validateAll([
