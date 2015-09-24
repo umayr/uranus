@@ -978,7 +978,7 @@ describe('Uranus', () => {
     });
   });
   describe('#array', () => {
-    it.only('should be false if any one of item is invalid in array', () => {
+    it('should be false if any one of item is invalid in array', () => {
       let validator = new Uranus();
 
       let result = validator.validateAll([{
