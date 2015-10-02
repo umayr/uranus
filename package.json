@@ -7,6 +7,7 @@
     "eslint": "./node_modules/.bin/eslint --config ./.eslintrc ./src/. || true",
     "clean": "rm -rf ./dist/",
     "compile": "./node_modules/.bin/babel --modules umd --optional runtime --source-maps inline --no-non-standard --out-dir ./dist ./src",
+    "watch": "./node_modules/.bin/babel --modules umd --optional runtime --source-maps inline --no-non-standard --watch --out-dir ./dist ./src",
     "build": "npm run clean && npm run compile || true",
     "prepublish": "npm run build",
     "pretest": "npm run eslint && npm run build",
@@ -39,7 +40,7 @@
   ],
   "dependencies": {
     "babel-runtime": "^5.8.20",
-    "cressida": "^0.4.0",
+    "cressida": "^0.4.1",
     "validator": "^4.0.0"
   }
 }
