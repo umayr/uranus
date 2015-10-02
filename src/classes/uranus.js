@@ -118,7 +118,7 @@ export default class Uranus {
     let _value = null;
     let _name = null;
 
-    if (typeof src === 'object' && src !== null && src.constructor.name === 'Object' && src.name && src.value) {
+    if (typeof src === 'object' && src !== null && src.constructor.name === 'Object' && typeof src.name !== 'undefined') {
       _name = src.name;
       _value = src.value;
     }
