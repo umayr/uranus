@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "babel-runtime": "^5.8.20",
-    "cressida": "^0.4.2",
+    "cressida": "^0.4.3",
     "validator": "^4.0.0"
   }
 }
