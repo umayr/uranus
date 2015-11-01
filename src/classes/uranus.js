@@ -83,7 +83,9 @@ export default class Uranus {
       rule = args[0];
       args.shift();
     }
-    if (rule === 'is' || rule === 'not') rule += rule;
+    if (rule === 'is') rule = 'matches';
+    if (rule === 'not') rule = '!matches';
+
     return this.options.includeName && name !== null ? this.message(name, rule, args) : this.message(rule, args);
   }
 
