@@ -5,21 +5,21 @@
 
 'use strict';
 
-import validator from 'validator';
-import cressida from 'cressida';
+let validator = require('validator');
+let cressida = require('cressida');
 
-import * as extensions from '../utils/extensions';
-import * as utils from '../utils/index';
+let extensions = require('../utils/extensions');
+let utils = require('../utils/');
 
-import ValidationItem from './item';
-import ValidationResult from './result';
+let ValidationItem = require('./item');
+let ValidationResult = require('./result');
 
 const DEFAULTS = {
   progressive: false,
   includeName: true
 };
 
-export default class Uranus {
+module.exports = class Uranus {
   /**
    * Creates new instance of Uranus.
    *
@@ -39,8 +39,8 @@ export default class Uranus {
    * @private
    */
   _registerExtensions() {
-    for (let [key, value] of utils.entries(extensions)) {
-      this.validator.extend(key, value);
+    for (let extension of utils.entries(extensions)) {
+      this.validator.extend(extension[0], extension[1]);
     }
   }
 
@@ -101,8 +101,9 @@ export default class Uranus {
     let _items = [];
     src.map((item, index) => {
       let src = item.name ? {value: item.value, name: item.name} : item.value;
-      let [__validity, __result] = this._validateOne(src, item.rules);
-      [_validity, _items[index]] = [!_validity ? _validity : __validity, __result];
+      let _operation = this._validateOne(src, item.rules);
+      let _validity = _operation[0];
+      _items[index] = !_validity ? undefined : _operation[1];
     });
     return new ValidationResult(_validity, _items);
   }
@@ -126,11 +127,15 @@ export default class Uranus {
     }
     else _value = src;
 
-    for (let [rule, test] of utils.entries(rules)) {
+    for (let entry of utils.entries(rules)) {
+      let rule = entry[0];
+      let test = entry[1];
+
       if (['isUrl', 'isURL', 'isEmail'].indexOf(rule) !== -1) {
         if (typeof test === 'object' && test !== null && test.msg) test = {msg: test.msg};
         else if (test) test = {};
       }
+
       let [invalid, message] = this._exec(_value, test, rule, _name);
 
       if (invalid) {
@@ -218,4 +223,4 @@ export default class Uranus {
     let instance = new Uranus(options);
     return instance.validateOne(value, rules);
   }
-}
+};
