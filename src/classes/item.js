@@ -5,17 +5,17 @@
 
 'use strict';
 
-export default class ValidationItem {
+module.exports = class ValidationItem {
   /**
    * Instance for a single validation item result.
    *
-   * @param validity
-   * @param message
+   * @param validity {string}
+   * @param [message=''] {string}
    * @constructor
    */
-  constructor(validity, message = '') {
+  constructor(validity, message) {
     this.validity = validity;
-    this.message = message;
+    this.message = message || '';
   }
 
   /**
@@ -47,4 +47,4 @@ export default class ValidationItem {
   getMessage() {
     return String(this.message);
   }
-}
+};

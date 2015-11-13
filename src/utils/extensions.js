@@ -4,6 +4,7 @@
  */
 'use strict';
 
+let extensions = module.exports = {};
 /**
  * Verifies if the string is not empty.
  * Covers space, tab, and new line.
@@ -11,7 +12,7 @@
  * @param str
  * @returns {boolean}
  */
-export function notEmpty(str) {
+extensions.notEmpty = function notEmpty(str) {
   return !str.match(/^[\s\t\r\n]*$/);
 };
 
@@ -22,7 +23,7 @@ export function notEmpty(str) {
  * @param min
  * @param max
  */
-export function len(str, min, max) {
+extensions.len = function len(str, min, max) {
   return this.isLength(str, min, max);
 };
 
@@ -31,7 +32,7 @@ export function len(str, min, max) {
  *
  * @param str
  */
-export function isUrl(str) {
+extensions.isUrl = function isUrl(str) {
   return this.isURL(str);
 };
 
@@ -40,7 +41,7 @@ export function isUrl(str) {
  *
  * @param str
  */
-export function isIPv6(str) {
+extensions.isIPv6 = function isIPv6(str) {
   return this.isIP(str, 6);
 };
 
@@ -49,7 +50,7 @@ export function isIPv6(str) {
  *
  * @param str
  */
-export function isIPv4(str) {
+extensions.isIPv4 = function isIPv4(str) {
   return this.isIP(str, 4);
 };
 
@@ -60,7 +61,7 @@ export function isIPv4(str) {
  * @param values
  * @returns {boolean}
  */
-export function notIn(str, values) {
+extensions.notIn = function notIn(str, values) {
   return !this.isIn(str, values);
 };
 
@@ -72,7 +73,7 @@ export function notIn(str, values) {
  * @param modifiers
  * @returns {Array|{index: number, input: string}}
  */
-export function regex(str, pattern, modifiers) {
+extensions.regex = function regex(str, pattern, modifiers) {
   str += '';
   if (Object.prototype.toString.call(pattern).slice(8, -1) !== 'RegExp') {
     pattern = new RegExp(pattern, modifiers);
@@ -88,7 +89,7 @@ export function regex(str, pattern, modifiers) {
  * @param modifiers
  * @returns {boolean}
  */
-export function notRegex(str, pattern, modifiers) {
+extensions.notRegex = function notRegex(str, pattern, modifiers) {
   return !this.regex(str, pattern, modifiers);
 };
 
@@ -98,7 +99,7 @@ export function notRegex(str, pattern, modifiers) {
  * @param str
  * @returns {boolean|Array|{index: number, input: string}}
  */
-export function isDecimal(str) {
+extensions.isDecimal = function isDecimal(str) {
   return str !== '' && str.match(/^(?:-?(?:[0-9]+))?(?:\.[0-9]*)?(?:[eE][\+\-]?(?:[0-9]+))?$/);
 };
 
@@ -108,7 +109,7 @@ export function isDecimal(str) {
  * @param str
  * @returns {boolean}
  */
-export function notNull(str) {
+extensions.notNull = function notNull(str) {
   return !this.isNull(str);
 };
 
@@ -119,7 +120,7 @@ export function notNull(str) {
  * @param check
  * @returns {*}
  */
-export function optional(str, check) {
+extensions.optional = function optional(str, check) {
   if (this.isNull(str)) {
     return true;
   }
@@ -142,7 +143,7 @@ export function optional(str, check) {
  * @param val
  * @returns {boolean}
  */
-export function min(str, val) {
+extensions.min = function min(str, val) {
   let number = parseFloat(str);
   return isNaN(number) || number >= val;
 };
@@ -154,7 +155,7 @@ export function min(str, val) {
  * @param val
  * @returns {boolean}
  */
-export function max(str, val) {
+extensions.max = function max(str, val) {
   let number = parseFloat(str);
   return isNaN(number) || number <= val;
 };
@@ -167,7 +168,7 @@ export function max(str, val) {
  * @param modifiers
  * @returns {boolean}
  */
-export function not(str, pattern, modifiers) {
+extensions.not = function not(str, pattern, modifiers) {
   return this.notRegex(str, pattern, modifiers);
 };
 
@@ -178,7 +179,7 @@ export function not(str, pattern, modifiers) {
  * @param elem
  * @returns {boolean}
  */
-export function contains(str, elem) {
+extensions.contains = function contains(str, elem) {
   return str.indexOf(elem) >= 0 && Boolean(elem);
 };
 
@@ -189,7 +190,7 @@ export function contains(str, elem) {
  * @param elem
  * @returns {boolean}
  */
-export function notContains(str, elem) {
+extensions.notContains = function notContains(str, elem) {
   return !this.contains(str, elem);
 };
 
@@ -201,7 +202,7 @@ export function notContains(str, elem) {
  * @param modifiers
  * @returns {Array|{index: number, input: string}}
  */
-export function is(str, pattern, modifiers) {
+extensions.is = function is(str, pattern, modifiers) {
   return this.regex(str, pattern, modifiers);
 };
 
@@ -210,7 +211,7 @@ export function is(str, pattern, modifiers) {
  *
  * @param str
  */
-export function isUUIDv3(str) {
+extensions.isUUIDv3 = function isUUIDv3(str) {
   return this.isUUID(str, 3);
 };
 
@@ -219,7 +220,7 @@ export function isUUIDv3(str) {
  *
  * @param str
  */
-export function isUUIDv4(str) {
+extensions.isUUIDv4 = function isUUIDv4(str) {
   return this.isUUID(str, 4);
 };
 
@@ -228,6 +229,6 @@ export function isUUIDv4(str) {
  *
  * @param str
  */
-export function isUUIDv5(str) {
+extensions.isUUIDv5 = function isUUIDv5(str) {
   return this.isUUID(str, 5);
 };
