@@ -9,7 +9,10 @@ Uranus is a wrapper validation utility over chriso's awesome [validator.js](http
  $ npm install --save uranus
 ```
 
-**Note:** `v2` is written in Node 4x so its not compatible with previous versions of Node. For previous versions, install `v1` via `npm install --save uranus@1.x`.
+**Note:** `2.x` is written in Node 4x so its not compatible with previous versions of Node. For previous versions, install `1.x`:
+```
+ $ npm install --save uranus@1.x
+```
 
 #### Tests:
 
