@@ -22,6 +22,19 @@ const DEFAULTS = {
 module.exports = class Uranus {
 
   /**
+   * Creates new instance of Uranus.
+   *
+   * @param options
+   * @constructor
+   */
+  constructor(options) {
+    this.options = Object.assign({}, DEFAULTS, options);
+    this.cressida = cressida.create({includeName: this.options.includeName});
+    this.validator = validator;
+    this._registerExtensions();
+  }
+
+  /**
    * Registers all extra extension methods to validator instance.
    *
    * @private
@@ -183,19 +196,6 @@ module.exports = class Uranus {
   validateOne(value, rules) {
     let _tmp = this._validateOne(value, rules);
     return new ValidationResult(_tmp[0], _tmp[1]);
-  }
-
-  /**
-   * Creates new instance of Uranus.
-   *
-   * @param options
-   * @constructor
-   */
-  constructor(options) {
-    this.options = Object.assign({}, DEFAULTS, options);
-    this.cressida = cressida.create({includeName: this.options.includeName});
-    this.validator = validator;
-    this._registerExtensions();
   }
 
   /**
