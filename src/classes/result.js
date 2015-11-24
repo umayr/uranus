@@ -69,10 +69,8 @@ module.exports = class ValidationResult {
   getAllMessages() {
     let errors = [];
     for (let item of entries(this.items)) {
-      let object = item[1];
-      for (let props of entries(object)) {
-        let name = props[0];
-        if (!object[name].isValid()) errors.push(object[name].getMessage());
+      for (let props of entries(item.value)) {
+        if (!item.value[props.key].isValid()) errors.push(item.value[props.key].getMessage());
       }
     }
     return errors;
