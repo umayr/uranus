@@ -5,8 +5,8 @@
 
 'use strict';
 
-import Uranus from '../dist/';
-import { equal } from 'assert';
+const Uranus = require('../src');
+const equal = require('assert').equal;
 
 let prepare = {
   all(value, rule, message, args) {
@@ -25,12 +25,11 @@ let prepare = {
 
 function exec(options, value, expected) {
 
-  let [all, one] = [
-    Uranus.validateAll([prepare.all(value, options.validator, options.msg, options.args)]),
-    Uranus.validateOne(value, prepare.one(options.validator, options.msg, options.args))
-  ];
-  if (all.isValid() !== expected) fail('validateAll', options.validator, value, expected);
 
+  let all = Uranus.validateAll([prepare.all(value, options.validator, options.msg, options.args)]);
+  let one = Uranus.validateOne(value, prepare.one(options.validator, options.msg, options.args));
+
+  if (all.isValid() !== expected) fail('validateAll', options.validator, value, expected);
   if (one.isValid() !== expected) fail('validateOne', options.validator, value, expected);
 
 }
