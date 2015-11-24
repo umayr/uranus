@@ -1082,4 +1082,54 @@ describe('Uranus', () => {
 
     });
   });
+  describe('#extensions', () => {
+    it('should provide facility to add custom extension methods', () => {
+      let validator = new Uranus({
+        extensions: {
+          hasFoo(str) {
+            return str.match(/foo/);
+          }
+        }
+      });
+
+      {
+        let response = validator.validateAll([
+          {
+            value: 'foo',
+            rules: {
+              hasFoo: true
+            }
+          }
+        ]);
+        equal(response.isValid(), true);
+      }
+      {
+        let response = validator.validateAll([
+          {
+            value: 'notf00',
+            rules: {
+              hasFoo: true
+            }
+          }
+        ]);
+        equal(response.isValid(), false);
+      }
+    });
+
+    it('should throw error when undefined rule is provided', () => {
+      try {
+        Uranus.validateAll([
+          {
+            value: 'foo',
+            rules: {
+              hasBar: true
+            }
+          }
+        ]);
+      }
+      catch (error) {
+        equal(error.message, 'Rule `hasBar` is not defined.');
+      }
+    })
+  });
 });
