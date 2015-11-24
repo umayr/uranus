@@ -5,8 +5,15 @@
 
 'use strict';
 
-export function* entries(object) {
+let utils = module.exports = {};
+
+/**
+ * Iterate through any iteratable object.
+ *
+ * @param object
+ */
+utils.entries = function* entries(object) {
   for (let key of Object.keys(object)) {
-    yield [key, object[key]];
+    yield {key, value: object[key]};
   }
-}
+};

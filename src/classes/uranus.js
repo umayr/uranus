@@ -5,21 +5,22 @@
 
 'use strict';
 
-import validator from 'validator';
-import cressida from 'cressida';
+let validator = require('validator');
+let cressida = require('cressida');
 
-import * as extensions from '../utils/extensions';
-import * as utils from '../utils/index';
+let extensions = require('../utils/extensions');
+let utils = require('../utils/');
 
-import ValidationItem from './item';
-import ValidationResult from './result';
+let ValidationItem = require('./item');
+let ValidationResult = require('./result');
 
 const DEFAULTS = {
   progressive: false,
   includeName: true
 };
 
-export default class Uranus {
+module.exports = class Uranus {
+
   /**
    * Creates new instance of Uranus.
    *
@@ -28,7 +29,7 @@ export default class Uranus {
    */
   constructor(options) {
     this.options = Object.assign({}, DEFAULTS, options);
-    this.message = cressida.create({includeName: this.options.includeName});
+    this.cressida = cressida.create({includeName: this.options.includeName});
     this.validator = validator;
     this._registerExtensions();
   }
@@ -39,8 +40,8 @@ export default class Uranus {
    * @private
    */
   _registerExtensions() {
-    for (let [key, value] of utils.entries(extensions)) {
-      this.validator.extend(key, value);
+    for (let extension of utils.entries(extensions)) {
+      this.validator.extend(extension.key, extension.value);
     }
   }
 
@@ -65,7 +66,10 @@ export default class Uranus {
     }
     else validatorArgs = validatorArgs.slice(0);
     let args = [value].concat(validatorArgs);
-    return [!this.validator[rule].apply(validator, args), this._message(rule, args, name)];
+    return {
+      invalid: !this.validator[rule].apply(validator, args),
+      message: this._message(rule, args, name)
+    };
   }
 
   /**
@@ -86,7 +90,7 @@ export default class Uranus {
     if (rule === 'is') rule = 'matches';
     if (rule === 'not') rule = '!matches';
 
-    return this.options.includeName && name !== null ? this.message(name, rule, args) : this.message(rule, args);
+    return this.options.includeName && name !== null ? this.cressida(name, rule, args) : this.cressida(rule, args);
   }
 
   /**
@@ -101,8 +105,10 @@ export default class Uranus {
     let _items = [];
     src.map((item, index) => {
       let src = item.name ? {value: item.value, name: item.name} : item.value;
-      let [__validity, __result] = this._validateOne(src, item.rules);
-      [_validity, _items[index]] = [!_validity ? _validity : __validity, __result];
+      let _tmp = this._validateOne(src, item.rules);
+
+      _validity = !_validity ? _validity : _tmp[0];
+      _items[index] = _tmp[1];
     });
     return new ValidationResult(_validity, _items);
   }
@@ -115,8 +121,8 @@ export default class Uranus {
    * @private
    */
   _validateOne(src, rules) {
-    let _validity = true;
-    let _result = {};
+    let validity = true;
+    let result = {};
     let _value = null;
     let _name = null;
 
@@ -126,29 +132,36 @@ export default class Uranus {
     }
     else _value = src;
 
-    for (let [rule, test] of utils.entries(rules)) {
+    for (let entry of utils.entries(rules)) {
+      let rule = entry.key;
+      let test = entry.value;
+
       if (['isUrl', 'isURL', 'isEmail'].indexOf(rule) !== -1) {
         if (typeof test === 'object' && test !== null && test.msg) test = {msg: test.msg};
         else if (test) test = {};
       }
-      let [invalid, message] = this._exec(_value, test, rule, _name);
 
-      if (invalid) {
-        _validity = false;
-        _result[rule] = new ValidationItem(false, test.msg || message || `Validation \`${rule}\` failed.`);
+      let _operation = this._exec(_value, test, rule, _name);
+
+      if (_operation.invalid) {
+        validity = false;
+        result[rule] = new ValidationItem(false, test.msg || _operation.message || `Validation \`${rule}\` failed.`);
         if (this.options.progressive) break;
       }
-      else _result[rule] = new ValidationItem(true);
+      else result[rule] = new ValidationItem(true);
     }
-    return [_validity, _result];
+    return [validity, result];
   }
 
   _validateObject(src, rules) {
     let _validity = true;
     let _items = [];
 
-    for (let [key, tests] of utils.entries(rules)) {
-      [_validity, _items[key]] = this._validateOne(src[key], tests);
+    for (let entry of utils.entries(rules)) {
+      let _tmp = this._validateOne(src[entry.key], entry.value);
+      _validity = _tmp[0];
+      _items[entry.key] = _tmp[1];
+      // God, I miss destructuring.
     }
     return new ValidationResult(_validity, _items);
   }
@@ -160,8 +173,8 @@ export default class Uranus {
    * @returns {*}
    */
   validateAll(src) {
-    if (Array.isArray(src)) return this._validateArray(...arguments);
-    else if (src instanceof Object) return this._validateObject(...arguments);
+    if (Array.isArray(src)) return this._validateArray.apply(this, Array.from(arguments));
+    else if (src instanceof Object) return this._validateObject.apply(this, Array.from(arguments));
     else throw new Error('Uranus only support array at the moment. Usage: https://github.com/umayr/uranus/blob/develop/README.md#usage');
   }
 
@@ -181,7 +194,8 @@ export default class Uranus {
    *  validator.validateOne(value, rules);
    */
   validateOne(value, rules) {
-    return new ValidationResult(...this._validateOne(value, rules));
+    let _tmp = this._validateOne(value, rules);
+    return new ValidationResult(_tmp[0], _tmp[1]);
   }
 
   /**
@@ -203,7 +217,7 @@ export default class Uranus {
       args.pop();
     }
     let instance = new Uranus(options);
-    return instance.validateAll(...args);
+    return instance.validateAll.apply(instance, args);
   }
 
   /**
@@ -218,4 +232,4 @@ export default class Uranus {
     let instance = new Uranus(options);
     return instance.validateOne(value, rules);
   }
-}
+};

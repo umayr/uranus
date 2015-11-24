@@ -5,14 +5,14 @@
 
 'use strict';
 
-import { entries } from '../utils/index';
+let entries = require('../utils').entries;
 
-export default class ValidationResult {
+module.exports = class ValidationResult {
   /**
    * Instance for whole validation result.
    *
-   * @param validity
-   * @param items
+   * @param validity {boolean}
+   * @param items {Array}
    * @constructor
    */
   constructor(validity, items) {
@@ -32,7 +32,7 @@ export default class ValidationResult {
   /**
    * Returns all rules result against one value.
    *
-   * @param key
+   * @param key {string}
    * @returns {*}
    */
   getItem(key) {
@@ -42,8 +42,8 @@ export default class ValidationResult {
   /**
    * Returns single specific rule result against one value.
    *
-   * @param key
-   * @param rule
+   * @param key {string}
+   * @param rule {string}
    * @returns {{isValid, message}|{isValid: boolean, message: string}}
    */
   getRule(key, rule) {
@@ -53,8 +53,8 @@ export default class ValidationResult {
   /**
    * Returns message for one item.
    *
-   * @param key
-   * @param rule
+   * @param key {string}
+   * @param rule {string}
    * @returns {*|string}
    */
   getMessage(key, rule) {
@@ -68,11 +68,11 @@ export default class ValidationResult {
    */
   getAllMessages() {
     let errors = [];
-    for (let [, object] of entries(this.items)) {
-      for (let [name] of entries(object)) {
-        if (!object[name].isValid()) errors.push(object[name].getMessage());
+    for (let item of entries(this.items)) {
+      for (let props of entries(item.value)) {
+        if (!item.value[props.key].isValid()) errors.push(item.value[props.key].getMessage());
       }
     }
     return errors;
   }
-}
+};

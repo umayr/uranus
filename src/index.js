@@ -5,5 +5,4 @@
 
 'use strict';
 
-import Uranus from './classes/uranus.js';
-export default Uranus;
+module.exports = require('./classes/uranus');
