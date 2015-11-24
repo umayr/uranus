@@ -280,7 +280,7 @@ Note: You can get whole `ValidationItem` by using `getRule()`.
 
 #### Supported Rules:
 
-As mentioned above, Uranus acts like a wrapper to `validator.js` so it supports all validations currently provided by `validator.js`. In addition to that, there are several extra validations that Uranus provides. Some common validations along with their args are as follows:
+As mentioned above, Uranus acts like a wrapper to `validator.js` so it supports all validations currently provided by `validator.js`. In addition to that, there are several extra validations rules that Uranus provides out of the box. Some common validations along with their args are as follows:
 
 ```
   is: ["^[a-z]+$",'i'],       // will only allow letters
@@ -320,7 +320,73 @@ As mentioned above, Uranus acts like a wrapper to `validator.js` so it supports 
 ```
 
 Checkout [`Validator.js`](https://github.com/chriso/validator.js) project for more details on supported validations.
-Note: If a rule is supported by `validator.js` but it doesn't work properly in Uranus, please feel free to report an issue.
+
+**Note:** If a rule is supported by `validator.js` but it doesn't work properly in Uranus, please feel free to report an issue.
+
+#### Custom Rules:
+
+Additional rules can be added while instantiating Uranus, for e.g.
+
+```javascript
+  let validator = new Uranus({
+      extensions: {
+        hasFoo(str) {
+          return str.match(/foo/);
+        }
+      }
+    });
+  let response = validator.validateAll([{
+      value: 'foo',
+      rules: {
+        hasFoo: true
+      }
+    }]);
+        
+  response.isValid() // true
+```
+
+If you want to use predefined rules in your custom rule, it can be done as:
+
+```javascript
+  let validator = new Uranus({
+      extensions: {
+        isLowercaseAlpha(str) {
+          // Here `this` refers to the validator instance.
+          // Therefore, all built-in validators will be available here.
+          
+          return this.isAlpha(str) && this.isLowercase(str)
+        }
+      }
+    });
+  let response = validator.validateAll([{
+      value: 'foobar1',
+      rules: {
+        isLowercaseAlpha: true
+      }
+    }]);
+        
+  response.isValid() // false
+```
+
+Parameters passed from a rule can be accessed as additional arguments in the extension method:
+
+```javascript
+  let validator = new Uranus({
+      extensions: {
+        range(str, min, max) {
+          return str.length > min && str.lenght < max;
+        }
+      }
+    });
+  let response = validator.validateAll([{
+      value: 'cat',
+      rules: {
+        range: [1, 10]
+      }
+    }]);
+        
+  response.isValid() // true
+```
 
 #### License:
 

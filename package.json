@@ -7,7 +7,7 @@
     "eslint": "./node_modules/.bin/eslint --config ./.eslintrc ./src/. || true",
     "pretest": "npm run eslint",
     "test": "./node_modules/.bin/mocha --reporter spec tests/.",
-    "debug": "./node_modules/.bin/mocha --compilers --reporter spec --debug-brk --inline-diffs --watch tests/."
+    "debug": "./node_modules/.bin/mocha --reporter spec --inline-diffs --watch tests/."
   },
   "repository": {
     "type": "git",

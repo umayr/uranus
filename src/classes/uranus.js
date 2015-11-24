@@ -16,7 +16,8 @@ let ValidationResult = require('./result');
 
 const DEFAULTS = {
   progressive: false,
-  includeName: true
+  includeName: true,
+  extensions: {}
 };
 
 module.exports = class Uranus {
@@ -29,6 +30,7 @@ module.exports = class Uranus {
    */
   constructor(options) {
     this.options = Object.assign({}, DEFAULTS, options);
+    this.extensions = Object.assign({}, extensions, this.options.extensions);
     this.cressida = cressida.create({includeName: this.options.includeName});
     this.validator = validator;
     this._registerExtensions();
@@ -40,7 +42,7 @@ module.exports = class Uranus {
    * @private
    */
   _registerExtensions() {
-    for (let extension of utils.entries(extensions)) {
+    for (let extension of utils.entries(this.extensions)) {
       this.validator.extend(extension.key, extension.value);
     }
   }
@@ -56,7 +58,7 @@ module.exports = class Uranus {
    * @private
    */
   _exec(value, test, rule, name) {
-    if (typeof this.validator[rule] !== 'function') throw new Error(`Invalid validator function: ${rule}`);
+    if (typeof this.validator[rule] !== 'function') throw new Error(`Rule \`${rule}\` is not defined.`);
 
     let validatorArgs = test.args || test;
 
@@ -67,7 +69,7 @@ module.exports = class Uranus {
     else validatorArgs = validatorArgs.slice(0);
     let args = [value].concat(validatorArgs);
     return {
-      invalid: !this.validator[rule].apply(validator, args),
+      invalid: !this.validator[rule].apply(this.validator, args),
       message: this._message(rule, args, name)
     };
   }
@@ -89,8 +91,14 @@ module.exports = class Uranus {
     }
     if (rule === 'is') rule = 'matches';
     if (rule === 'not') rule = '!matches';
+    try {
+      return this.options.includeName && name !== null ? this.cressida(name, rule, args) : this.cressida(rule, args);
+    }
+    catch (error) {
+      if (!error.message.match(/not supported/) || !this.extensions[rule]) throw error;
+      else return null;
+    }
 
-    return this.options.includeName && name !== null ? this.cressida(name, rule, args) : this.cressida(rule, args);
   }
 
   /**
@@ -145,7 +153,7 @@ module.exports = class Uranus {
 
       if (_operation.invalid) {
         validity = false;
-        result[rule] = new ValidationItem(false, test.msg || _operation.message || `Validation \`${rule}\` failed.`);
+        result[rule] = new ValidationItem(false, test.msg || _operation.message || `Validation failed for rule: \`${rule}\`.`);
         if (this.options.progressive) break;
       }
       else result[rule] = new ValidationItem(true);
