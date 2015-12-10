@@ -2,3 +2,7 @@ language: node_js
 node_js:
   - v5
   - v4
+notifications:
+  slack:
+    rooms:
+      - jshipster:9xuGL8YzehK6mxuMighJ7Reg#uranus
